@@ -76,7 +76,7 @@ _**Benefactor Circle add-on users with mailboxes in Exchange Online should updat
 - Add to the taskpane a "Copy to clipboard" button for the currently previewed signature. This makes it easy to copy a signature to another email client and to overcome the 30,000 character limit.
 - Add to the taskpane a "Copy to clipboard" button for the log output.
 - Add to the taskpane a "Reload add-in" button for iOS and a link to instructions how to clear the add-in cache on all platforms.
-- Add to the online documentation instructions how to '[Clear the Outlook add-in cache](https://set-outlooksignatures.com/outlookaddin#53-clear-the-outlook-add-in-cache)'.
+- Add to the online documentation instructions how to '[Clear the Outlook add-in cache](https://set-outlooksignatures.com/outlookaddin#clear-the-outlook-add-in-cache)'.
 
 ### Fixed
 #### Set-OutlookSignatures
