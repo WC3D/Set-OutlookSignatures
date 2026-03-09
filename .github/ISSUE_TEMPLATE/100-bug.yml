@@ -22,7 +22,7 @@ body:
     id: previousissuesanddocumentation
     attributes:
       label: Previously solved issues and documentation
-      description: Before creating a new issue, check the documentation ([README](https://set-outlooksignatures.com/help/) and associated documents), previous [issues](https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/issues?q=) and [discussions](https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/discussions?discussions_q=).
+      description: Before creating a new issue, check the [documentation](https://set-outlooksignatures.com/help/), previous [issues](https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/issues?q=) and [discussions](https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/discussions?discussions_q=).
       options:
         - label: I have searched through issues, discussions and documentation, but have not found an answer to my issue
           required: true
@@ -40,8 +40,8 @@ body:
       label: What happens?
       description: |
         Tell us what you expected to happen, what really happens and how the problem can be reproduced.
-        Attach the appropriate log file from '`$(Join-Path -Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::LocalApplicationData)) -ChildPath '\Set-OutlookSignatures\Logs')`'.
-        Verbose logs are preferred, see README FAQ "How can I log the software output?" for details.
+        Attach the appropriate log file (the script shows the log file path when starting and when ending).
+        Verbose logs are preferred, see FAQ '[How can I log the software output?](https://set-outlooksignatures.com/faq#how-can-i-log-the-software-output)' for details.
         You may not get support without a full unmodified log.
         Additionally, upload screenshots and other files that may help analyze the problem.
       placeholder:

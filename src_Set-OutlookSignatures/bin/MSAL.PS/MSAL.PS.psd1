@@ -67,7 +67,7 @@ MSAL.NET (Microsoft.Identity.Client) is an authentication library which enables 
     # FormatsToProcess = @()
 
     # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
-    NestedModules          = @(
+    nestedModules          = @(
         '.\internal\Assert-DirectoryExists.ps1',
         '.\internal\ConvertFrom-SecureStringAsPlainText.ps1',
         '.\internal\ConvertTo-Dictionary.ps1',

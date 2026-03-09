@@ -12,13 +12,13 @@
 # A variable defined in this file overrides the definition of the same variable defined earlier in the software.
 #
 #
-# See README file for more examples, such as:
-#   Allowed tags
-#   How to work with INI files
-#   Variable replacement
-#   Photos from Active Directory
-#   Delete images when attribute is empty, variable content based on group membership
-#   How to avoid blank lines when replacement variables return an empty string?
+# See the help and support center (https://set-outlooksignatures.com/help) for more examples, such as:
+#   Allowed tags (https://set-outlooksignatures.com/details#allowed-tags)
+#   How to work with INI files (https://set-outlooksignatures.com/details#how-to-work-with-ini-files)
+#   Replacement variables (https://set-outlooksignatures.com/details#replacement-variables)
+#   Photos from Active Directory (https://set-outlooksignatures.com/details#photos-account-pictures-user-image-from-active-directory-or-entra-id)
+#   Delete images when attribute is empty, variable content based on group membership (https://set-outlooksignatures.com/details#delete-images-when-attribute-is-empty-variable-content-based-on-group-membership)
+#   How to avoid blank lines when replacement variables return an empty string (https://set-outlooksignatures.com/faq#how-to-avoid-blank-lines-when-replacement-variables-return-an-empty-string)
 #
 #
 # What is the recommended approach for custom configuration files?

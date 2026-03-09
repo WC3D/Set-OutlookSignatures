@@ -1074,7 +1074,7 @@ function Find-UnknownComponents {
 $OutputEncoding = [Console]::InputEncoding = [Console]::OutputEncoding = New-Object System.Text.UTF8Encoding
 
 # $PSScriptRoot is the path to the current module script (.psm1 file)
-$confPath = Join-Path $PSScriptRoot 'address-formatting\conf'
+$confPath = Join-Path $PSScriptRoot 'subModules\OpenCageData\address-formatting\conf'
 
 # The path to your configuration data must be relative to the module root.
 # Assuming 'conf' folder is a peer to the .psm1 file.

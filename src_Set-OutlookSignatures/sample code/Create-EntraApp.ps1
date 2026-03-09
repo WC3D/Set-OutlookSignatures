@@ -10,8 +10,6 @@ Would you like support? ExplicIT Consulting (https://explicitconsulting.at) offe
 #>
 
 
-#Requires -Version 5.1
-
 [CmdletBinding()]
 
 param (
@@ -21,17 +19,33 @@ param (
     #   'SimulateAndDeploy' for use in the "simulate and deploy" scenario
     #     Uses delegated permissions and application permissions, as described in '.\sample code\SimulateAndDeploy.ps1'
     #   For security reasons, the app type has no default value and needs to be set manually
-    [ValidateSet('Set-OutlookSignatures', 'SimulateAndDeploy', 'OutlookAddIn')]
+    [ValidateSet('Set-OutlookSignatures', 'SimulateAndDeploy', 'OutlookAddIn', IgnoreCase = $true)]
     $AppType = $null,
 
+    # Name of the Entra ID application to create
     [ValidateNotNullOrEmpty()]
     $AppName = $null,
 
+    # Outlook add-in url to be used in the Entra ID application
     [ValidateNotNullOrEmpty()]
     [uri]$OutlookAddInUrl = $null,
 
-    [ValidateSet('Public', 'Global', 'AzurePublic', 'AzureGlobal', 'AzureCloud', 'AzureUSGovernmentGCC', 'USGovernmentGCC', 'AzureUSGovernment', 'AzureUSGovernmentGCCHigh', 'AzureUSGovernmentL4', 'USGovernmentGCCHigh', 'USGovernmentL4', 'AzureUSGovernmentDOD', 'AzureUSGovernmentL5', 'USGovernmentDOD', 'USGovernmentL5', 'China', 'AzureChina', 'ChinaCloud', 'AzureChinaCloud')]
-    [string]$CloudEnvironment = 'Public'
+    # Cloud environment to use
+    # Built-in values: 'Public', 'Global', 'AzurePublic', 'AzureGlobal', 'AzureCloud', 'AzureUSGovernmentGCC', 'USGovernmentGCC', 'AzureUSGovernment', 'AzureUSGovernmentGCCHigh', 'AzureUSGovernmentL4', 'USGovernmentGCCHigh', 'USGovernmentL4', 'AzureUSGovernmentDOD', 'AzureUSGovernmentL5', 'USGovernmentDOD', 'USGovernmentL5', 'China', 'AzureChina', 'ChinaCloud', 'AzureChinaCloud', 'Bleu', 'AzureBleu', 'BleuCloud', 'AzureBleuCloud', 'Delos', 'AzureDelos', 'DelosCloud', 'AzureDelosCloud', 'GovSG', 'AzureGovSG', 'GovSGCloud', 'AzureGovSGCloud'
+    # Other values require defining $MgGraphAzureADEndpoint and $MgGraphGraphEndpoint
+    [ValidateNotNullOrEmpty()]
+    [string]$CloudEnvironment = 'Public',
+
+    # String for AzureADEndpoint parameter to be used with Connect-MgGraph
+    # Only required for non built-in values for $CloudEnvironment
+    [string]$MgGraphAzureADEndpoint = $null, # Example: 'https://login.sovcloud-identity.example/'
+
+    # String for GraphEndpoint parameter to be used with Connect-MgGraph
+    # Only required for non built-in values for $CloudEnvironment
+    [string]$MgGraphGraphEndpoint = $null, # Example: 'https://graph.svc.sovcloud.example/'
+
+    # Application ID of the app to use when connecting with Connect-MgGraph
+    [string]$MgGraphAppClientId = $null
 )
 
 
@@ -119,8 +133,29 @@ switch ($CloudEnvironment) {
         break
     }
 
+    { $_ -iin @('Bleu', 'AzureBleu', 'BleuCloud', 'AzureBleuCloud') } {
+        $MgGraphEnvironment = 'BleuCloud'
+        $MgGraphAzureADEndpoint = 'https://login.sovcloud-identity.fr/'
+        $MgGraphGraphEndpoint = 'https://graph.svc.sovcloud.fr/'
+        break
+    }
+
+    { $_ -iin @('Delos', 'AzureDelos', 'DelosCloud', 'AzureDelosCloud') } {
+        $MgGraphEnvironment = 'DelosCloud'
+        $MgGraphAzureADEndpoint = 'https://login.sovcloud-identity.de/'
+        $MgGraphGraphEndpoint = 'https://graph.svc.sovcloud.de/'
+        break
+    }
+
+    { $_ -iin @('GovSG', 'AzureGovSG', 'GovSGCloud', 'AzureGovSGCloud') } {
+        $MgGraphEnvironment = 'GovSGCloud'
+        $MgGraphAzureADEndpoint = 'https://login.sovcloud-identity.sg/'
+        $MgGraphGraphEndpoint = 'https://graph.svc.sovcloud.sg/'
+        break
+    }
+
     default {
-        $MgGraphEnvironment = 'Global'
+        $MgGraphEnvironment = $CloudEnvironment
         break
     }
 }
@@ -155,7 +190,7 @@ try {
         if (Get-Module -ListAvailable -Name $_) {
             Find-Module -Name $_ -Repository PSGallery | Update-Module -Force -WarningAction SilentlyContinue -ErrorAction Stop
         } else {
-            Find-Module -Name $_ -Repository PSGallery | Install-Module -Scope CurrentUser -Force -AllowClobber -WarningAction SilentlyContinue -ErrorAction Stop
+            Find-Module -Name $_ -Repository PSGallery | Install-Module -Force -AllowClobber -WarningAction SilentlyContinue -ErrorAction Stop
         }
 
         Import-Module -Name $_ -Force -WarningAction SilentlyContinue -ErrorAction Stop
@@ -164,9 +199,22 @@ try {
     Write-Host "Error installing PowerShell modules: $($_)" -ForegroundColor Red
     Write-Host
     Write-Host 'This is a severe error. It is not related to this script, but to the basic PowerShell setup on this system.' -ForegroundColor Red
-    Write-Host 'Please fix these issues with PowerShell package management and package providers first.' -ForegroundColor Red
+    Write-Host 'Please fix these issues with PowerShell package management, package providers and modules first.' -ForegroundColor Red
 
     exit 1
+}
+
+
+if ((Get-MgEnvironment).Name -inotcontains $MgGraphEnvironment) {
+    Write-Host
+    Write-Host "Adding custom cloud environment '$($MgGraphEnvironment)'"
+
+    if ([String]::IsNullOrEmpty($MgGraphAzureADEndpoint) -or [String]::IsNullOrEmpty($MgGraphGraphEndpoint)) {
+        Write-Host "  '$($MgGraphEnvironment)' is a custom environment, so `$MgGraphAzureADEndpoint and `$MgGraphGraphEndpoint must be set." -ForegroundColor Red
+        exit 1
+    }
+
+    Add-MgEnvironment -Name $MgGraphEnvironment -AzureAdEndpoint $MgGraphAzureADEndpoint -GraphEndpoint $MgGraphGraphEndpoint
 }
 
 
@@ -182,7 +230,11 @@ $null = Disconnect-MgGraph -ErrorAction SilentlyContinue
 try {
     $scopes = @('Application.ReadWrite.All', 'AppRoleAssignment.ReadWrite.All', 'DelegatedPermissionGrant.ReadWrite.All')
 
-    Connect-MgGraph -Environment $MgGraphEnvironment -ContextScope Process -Scopes $scopes -NoWelcome -ErrorAction Stop
+    if ($MgGraphEnvironment -iin @('BleuCloud', 'DelosCloud', 'GovSGCloud')) {
+        Connect-MgGraph -Environment $MgGraphEnvironment -ClientId $MgGraphAppClientId -ContextScope Process -Scopes $scopes -NoWelcome -ErrorAction Stop
+    } else {
+        Connect-MgGraph -Environment $MgGraphEnvironment -ContextScope Process -Scopes $scopes -NoWelcome -ErrorAction Stop
+    }
 
     if (-not (Get-MgContext)) {
         throw 'No connection established.'
@@ -244,11 +296,11 @@ if ($AppType -ieq 'Set-OutlookSignatures') {
                         'type' = 'Scope'
                     },
 
-                    # Delegated permission: EWS.AccessAsUser.All
-                    #   Allows the app to have the same access to mailboxes as the signed-in user via Exchange Web Services.
+                    # Delegated permission: MailboxConfigItem.ReadWrite
+                    #   Allows the app to create, read, update and delete user's UserConfiguration objects, on behalf of the signed-in user.
                     #   Required to connect to Outlook on the web and to set Outlook on the web signature (classic and roaming).
                     @{
-                        'id'   = '9769c687-087d-48ac-9cb3-c37dde652038'
+                        'id'   = '7d461784-7715-4b09-9f90-91a6d8722652'
                         'type' = 'Scope'
                     },
 
@@ -339,11 +391,11 @@ if ($AppType -ieq 'Set-OutlookSignatures') {
                         'type' = 'Scope'
                     },
 
-                    # Delegated permission: EWS.AccessAsUser.All
-                    #   Allows the app to have the same access to mailboxes as the signed-in user via Exchange Web Services.
+                    # Delegated permission: MailboxConfigItem.ReadWrite
+                    #   Allows the app to create, read, update and delete user's UserConfiguration objects, on behalf of the signed-in user.
                     #   Required to connect to Outlook on the web and to set Outlook on the web signature (classic and roaming).
                     @{
-                        'id'   = '9769c687-087d-48ac-9cb3-c37dde652038'
+                        'id'   = '7d461784-7715-4b09-9f90-91a6d8722652'
                         'type' = 'Scope'
                     },
 
@@ -451,18 +503,13 @@ if ($AppType -ieq 'Set-OutlookSignatures') {
                     @{
                         'id'   = 'df021288-bdef-4463-88db-98f22de89214'
                         'type' = 'Role'
-                    }
-                )
-            },
-            @{
-                # Office 365 Exchange Online
-                'resourceAppId'  = '00000002-0000-0ff1-ce00-000000000000'
-                'resourceAccess' = @(
+                    },
+
+                    # Application permission: MailboxConfigItem.ReadWrite
+                    #   Allows the app to create, read, update and delete all users' UserConfiguration objects.
+                    #   Required to connect to Outlook on the web and to set Outlook on the web signature (classic and roaming).
                     @{
-                        # Application permission: full_access_as_app
-                        #   Allows the app to have full access via Exchange Web Services to all mailboxes without a signed-in user.
-                        #   Required for Exchange Web Services access (read Outlook on the web configuration, set classic signature and roaming signatures)
-                        'id'   = 'dc890d15-9560-4a4c-9b7f-a736ec74ec40'
+                        'id'   = 'aa6d92d4-b25a-4640-aefe-3e3231e5e736'
                         'type' = 'Role'
                     }
                 )
@@ -592,7 +639,7 @@ $null = Disconnect-MgGraph -ErrorAction SilentlyContinue
 
 
 Write-Host
-Write-Host '▼▼▼ Relevant information for your configuration below ▼▼▼' -ForegroundColor Green
+Write-Host 'Relevant information for your configuration below' -ForegroundColor Green
 if ($AppType -ieq 'Set-OutlookSignatures') {
     Write-Host "  GraphClientId for Set-OutlookSignatures: '$($app.AppId)'"
 } elseif ($AppType -ieq 'SimulateAndDeploy') {
@@ -602,7 +649,7 @@ if ($AppType -ieq 'Set-OutlookSignatures') {
 } elseif ($AppType -ieq 'OutlookAddIn') {
     Write-Host "  GRAPH_CLIENT_ID for Outlook Add-In: '$($app.AppId)'"
 }
-Write-Host '▲▲▲ Relevant information for your configuration above ▲▲▲' -ForegroundColor Green
+Write-Host 'Relevant information for your configuration above' -ForegroundColor Green
 
 Write-Host
 Write-Host 'Done'

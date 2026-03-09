@@ -472,13 +472,13 @@ public class X11Interop {
             $endTime = [datetime]::Now.Add($Timeout)
             while (!$taskAuthenticationResult.IsCompleted) {
               if ($Timeout -eq [timespan]::Zero -or [datetime]::Now -lt $endTime) {
-                try { WatchCatchableExitSignal } catch { }
+                try { global:WatchCatchableExitSignal } catch {}
 
                 Start-Sleep -Seconds 1
               } else {
                 $tokenSource.Cancel()
                 try { $taskAuthenticationResult.Wait() }
-                catch { }
+                catch {}
                 Write-Error -Exception (New-Object System.TimeoutException) -Category ([System.Management.Automation.ErrorCategory]::OperationTimeout) -CategoryActivity $MyInvocation.MyCommand -ErrorId 'GetMsalTokenFailureOperationTimeout' -TargetObject $AquireTokenParameters -ErrorAction Stop
               }
             }

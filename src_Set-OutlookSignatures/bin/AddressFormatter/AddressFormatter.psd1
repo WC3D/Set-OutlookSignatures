@@ -10,7 +10,7 @@
     FunctionsToExport = 'Format-PostalAddress'
 
     # Dependencies
-    NestedModules     = @(
+    nestedModules     = @(
         'nestedModules\powershell-yaml\powershell-yaml.psm1'
     )
 

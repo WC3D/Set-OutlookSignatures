@@ -22,7 +22,7 @@
 
 # Client ID
 # The default client ID is defined in the developers Entra ID tenant as multi-tenant, so it can be used everywhere
-#   For security and maintenance reasons, it is recommended to create you own app in your own tenant
+#   For security and maintenance reasons, it is recommended to create your own app in your own tenant
 # It can be replaced with the ID of an app created in your own tenant
 #   Option A: Create the app automatically by using the script '.\sample code\Create-EntraApp.ps1'
 #     The sample code creates the app with all required settings
@@ -35,7 +35,7 @@
 #       Set Redirect URI to "Mobile and desktop applications" and add
 #         'http://localhost' (http, not https) for browser authentication
 #         'ms-appx-web://microsoft.aad.brokerplugin/<Application ID of your app>' for AuthenticationBroker authentication
-#       The "Application (client) ID" is the value you need to set for the GraphClientID parameter of Set-OutlookSignatures
+#       The "Application (client) ID" is the value you need to set for the GraphClientID parameter of Set-OutlookSignatures (not the "Object ID")
 #     Client secret
 #       There is no need to define a client secret, as we only work with delegated permissions, and not with application permissions
 #     Add the following delegated permissions (not application permissions)
@@ -44,8 +44,8 @@
 #         email
 #           Allows the app to read your users' primary email address.
 #           Required to log on the current user.
-#         EWS.AccessAsUser.All
-#           Allows the app to have the same access to mailboxes as the signed-in user via Exchange Web Services.
+#         MailboxConfigItem.ReadWrite
+#           Allows the app to create, read, update and delete user's UserConfiguration objects, on behalf of the signed-in user.
 #           Required to connect to Outlook on the web and to set Outlook signatures.
 #         Files.Read.All
 #           Allows the app to read all files the signed-in user can access.
@@ -85,6 +85,22 @@ if (-not $GraphClientID) { $GraphClientID = 'beea8249-8c98-4c76-92f6-ce3c468a61e
 
 # Endpoint version
 $GraphEndpointVersion = 'v1.0'
+
+# Define custom cloud environments, such as for not yet publicly documented sovereign clouds
+$CustomCloudEnvironments = @(
+    @{
+        Aliases                 = @('AzureExample', 'Example', 'ExampleCloud', 'AzureExampleCloud') # Mandatory. Each value must be unique across all environments.
+        AzureADEndpoint         = 'https://login.sovcloud-identity.example' # Mandatory.
+        GraphApiEndpoint        = 'https://graph.svc.sovcloud.example' # Mandatory.
+        ExchangeOnlineEndpoint  = 'https://outlook.sovcloud.example' # Mandatory.
+        AutodiscoverSecureName  = 'https://autodiscover-s.outlook.sovcloud.example' # Mandatory.
+        SharePointOnlineDomains = @('sharepoint.example') # Mandatory for accessing SharePoint via Graph.
+    }
+
+    # @{
+    #   ...
+    # }
+)
 
 
 # Message box text to show when Linux keyring or macOS keychain is not yet unlocked, and the system asks the user for the password to unlock it

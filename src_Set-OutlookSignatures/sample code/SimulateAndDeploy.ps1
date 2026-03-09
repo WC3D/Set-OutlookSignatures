@@ -57,18 +57,17 @@ Requirements
 					  - User.Read.All
 						Allows the app to read the full set of profile properties, reports, and managers of other users in your organization, on behalf of the signed-in user.
 						Required for $CurrentUser[…]$ and $CurrentMailbox[…]$ replacement variables, and for simulation mode.
-				  - Office 365 Exchange Online
-				      - full_access_as_app
-						Allows the app to have full access via Exchange Web Services to all mailboxes without a signed-in user.
-						Required for Exchange Web Services access (read Outlook on the web configuration, set classic signature and roaming signatures)
+					  - MailboxConfigItem.ReadWrite
+					    Allows the app to create, read, update and delete all users' UserConfiguration objects.
+						Required to connect to Outlook on the web and to set Outlook on the web signature (classic and roaming).
 			  - Delegated (!) permissions with admin consent
 				These permissions equal those mentioned in '.\config\default graph config.ps1'
 			      - Microsoft Graph
 					  - email
 				        Allows the app to read your users' primary email address.
 					    Required to log on the current user.
-					  - EWS.AccessAsUser.All
-						Allows the app to have the same access to mailboxes as the signed-in user via Exchange Web Services.
+					  - MailboxConfigItem.ReadWrite
+						Allows the app to create, read, update and delete user's UserConfiguration objects, on behalf of the signed-in user.
 						Required to connect to Outlook on the web and to set Outlook on the web signature (classic and roaming).
 					  - Files.Read.All
 					    Allows the app to read all files the signed-in user can access.
@@ -151,9 +150,26 @@ param (
 	[pscredential]$GraphUserCredential = (
 		@(, @('SimulateAndDeployUser@example.com', 'P@ssw0rd!')) | ForEach-Object { New-Object System.Management.Automation.PSCredential ($_[0], $(ConvertTo-SecureString $_[1] -AsPlainText -Force)) }
 	), # Use Get-Credential for interactive mode or (Get-Content -LiteralPath '.\Config\password.secret') to retrieve info from a separate file (MFA is not supported in any case)
-	$GraphClientID = 'The Client ID of the Entra ID app for SimulateAndDeploy', # not the same ID as defined in 'default graph config.ps1' or a custom Graph config file
-	$GraphClientSecret = 'The Client Secret of the Entra ID app for SimulateAndDeploy', # to load the secret from a file, use (Get-Content -LiteralPath '.\Config\app.secret')
+	$GraphClientID = 'The application (client) ID of the Entra ID app for SimulateAndDeploy', # not the same ID as defined in 'default graph config.ps1' or a custom Graph config file
+	$GraphClientSecret = 'The client secret of the Entra ID app for SimulateAndDeploy', # to load the secret from a file, use (Get-Content -LiteralPath '.\Config\app.secret')
+	[ValidateNotNullOrEmpty()]
 	[string]$CloudEnvironment = 'Public',
+
+	# Define custom cloud environments, such as for not yet publicly documented sovereign clouds
+	$CustomCloudEnvironments = @(
+		@{
+			Aliases                 = @('AzureExample', 'Example', 'ExampleCloud', 'AzureExampleCloud') # Mandatory. Each value must be unique across all environments.
+			AzureADEndpoint         = 'https://login.sovcloud-identity.example' # Mandatory.
+			GraphApiEndpoint        = 'https://graph.svc.sovcloud.example' # Mandatory.
+			ExchangeOnlineEndpoint  = 'https://outlook.sovcloud.example' # Mandatory.
+			AutodiscoverSecureName  = 'https://autodiscover-s.outlook.sovcloud.example' # Mandatory.
+			SharePointOnlineDomains = @('sharepoint.example') # Mandatory for accessing SharePoint via Graph.
+		}
+
+		# @{
+		#   ...
+		# }
+	),
 
 	# As soon as $GraphData is not just an empty array, it takes priority over $GraphUserCredential, $GraphClientID, and $GraphClientSecret
 	# Format:
@@ -167,12 +183,12 @@ param (
 	$SetOutlookSignaturesScriptParameters = @{
 		# Do not use: SimulateUser, SimulateMailboxes, AdditionalSignaturePath, SimulateAndDeployGraphCredentialFile
 		#
-		# ▼▼▼ The "Deploy" part of "SimulateAndDeploy" requires a Benefactor Circle license ▼▼▼
-		# ▼▼▼ Without the license, signatures cannot be read from and written to mailboxes ▼▼▼
+		# The "Deploy" part of "SimulateAndDeploy" requires a Benefactor Circle license
+		# Without the license, signatures cannot be read from and written to mailboxes
 		BenefactorCircleLicenseFile   = '\\server\share\folder\license.dll'
 		BenefactorCircleID            = '<BenefactorCircleID>'
-		# ▲▲▲ The "Deploy" part of "SimulateAndDeploy" requires a Benefactor Circle license ▲▲▲
-		# ▲▲▲ Without the license, signatures cannot be read from and written to mailboxes ▲▲▲
+		# The "Deploy" part of "SimulateAndDeploy" requires a Benefactor Circle license
+		# Without the license, signatures cannot be read from and written to mailboxes
 		#
 		SimulateAndDeploy             = $false # $false simulates but does not deploy, $true simulates and deploys
 		UseHtmTemplates               = $false
@@ -225,7 +241,7 @@ function ParseJwtToken {
 	[cmdletbinding()]
 	param([Parameter(Mandatory = $true)][string]$token)
 
-	try { WatchCatchableExitSignal } catch { }
+	try { global:WatchCatchableExitSignal } catch {}
 
 	# Validate as per https://tools.ietf.org/html/rfc7519
 	# Access and ID tokens are fine, Refresh tokens will not work
@@ -281,16 +297,15 @@ function CreateUpdateSimulateAndDeployGraphCredentialFile {
 		$local:GraphClientSecret = $GraphDataObject[4]
 
 		$local:GraphUserCredential = (New-Object System.Management.Automation.PSCredential ($local:GraphUserCredentialUser, $(ConvertTo-SecureString $local:GraphUserCredentialPassword -AsPlainText -Force)))
-		$local:GraphCloudEnvironment = $script:GraphDomainToCloudInstanceCache[$local:GraphTenantId]
 
 		try {
 			# User authentication
-			$auth = get-msaltoken -AzureCloudInstance $local:GraphCloudEnvironment -UserCredential $local:GraphUserCredential -ClientId $local:GraphClientId -TenantId $local:GraphTenantId -RedirectUri 'http://localhost' -Scopes "$($script:CloudEnvironmentGraphApiEndpoint)/.default"
-			$authExo = get-msaltoken -AzureCloudInstance $local:GraphCloudEnvironment -UserCredential $local:GraphUserCredential -ClientId $local:GraphClientId -TenantId $local:GraphTenantId -RedirectUri 'http://localhost' -Scopes "$($script:CloudEnvironmentExchangeOnlineEndpoint)/.default"
+			$auth = get-msaltoken -Authority "$($script:CloudEnvironmentAzureADEndpoint)/$(@($local:GraphTenantId, 'organizations') | Where-Object { $_ } | Select-Object -First 1)" -UserCredential $local:GraphUserCredential -ClientId $local:GraphClientId -TenantId $local:GraphTenantId -RedirectUri 'http://localhost' -Scopes "$($script:CloudEnvironmentGraphApiEndpoint)/.default"
+			$authExo = get-msaltoken -Authority "$($script:CloudEnvironmentAzureADEndpoint)/$(@($local:GraphTenantId, 'organizations') | Where-Object { $_ } | Select-Object -First 1)" -UserCredential $local:GraphUserCredential -ClientId $local:GraphClientId -TenantId $local:GraphTenantId -RedirectUri 'http://localhost' -Scopes "$($script:CloudEnvironmentExchangeOnlineEndpoint)/.default"
 
 			# App authentication
-			$Appauth = get-msaltoken -AzureCloudInstance $local:GraphCloudEnvironment -ClientId $local:GraphClientId -ClientSecret ($local:GraphClientSecret | ConvertTo-SecureString -AsPlainText -Force) -TenantId $local:GraphTenantId -RedirectUri 'http://localhost' -Scopes "$($script:CloudEnvironmentGraphApiEndpoint)/.default"
-			$AppauthExo = get-msaltoken -AzureCloudInstance $local:GraphCloudEnvironment -ClientId $local:GraphClientId -ClientSecret ($local:GraphClientSecret | ConvertTo-SecureString -AsPlainText -Force) -TenantId $local:GraphTenantId -RedirectUri 'http://localhost' -Scopes "$($script:CloudEnvironmentExchangeOnlineEndpoint)/.default"
+			$Appauth = get-msaltoken -Authority "$($script:CloudEnvironmentAzureADEndpoint)/$(@($local:GraphTenantId, 'organizations') | Where-Object { $_ } | Select-Object -First 1)" -ClientId $local:GraphClientId -ClientSecret ($local:GraphClientSecret | ConvertTo-SecureString -AsPlainText -Force) -TenantId $local:GraphTenantId -RedirectUri 'http://localhost' -Scopes "$($script:CloudEnvironmentGraphApiEndpoint)/.default"
+			$AppauthExo = get-msaltoken -Authority "$($script:CloudEnvironmentAzureADEndpoint)/$(@($local:GraphTenantId, 'organizations') | Where-Object { $_ } | Select-Object -First 1)" -ClientId $local:GraphClientId -ClientSecret ($local:GraphClientSecret | ConvertTo-SecureString -AsPlainText -Force) -TenantId $local:GraphTenantId -RedirectUri 'http://localhost' -Scopes "$($script:CloudEnvironmentExchangeOnlineEndpoint)/.default"
 
 			$returnValues = @{
 				'error'             = $false
@@ -327,9 +342,9 @@ function CreateUpdateSimulateAndDeployGraphCredentialFile {
 	} else {
 		$null = $(
 			@{
-				GraphDomainToTenantIDCache      = $script:GraphDomainToTenantIDCache
-				GraphDomainToCloudInstanceCache = $script:GraphDomainToCloudInstanceCache
-				GraphTokenDictionary            = $local:GraphTokenDictionary
+				GraphDomainToTenantIDCache  = $script:GraphDomainToTenantIDCache
+				GraphDomainToCloudNameCache = $script:GraphDomainToCloudNameCache
+				GraphTokenDictionary        = $local:GraphTokenDictionary
 			} | Export-Clixml -Path $SimulateAndDeployGraphCredentialFile
 		)
 	}
@@ -348,8 +363,8 @@ function GraphDomainToTenantID {
 		$script:GraphDomainToTenantIDCache = @{}
 	}
 
-	if (-not $script:GraphDomainToCloudInstanceCache) {
-		$script:GraphDomainToCloudInstanceCache = @{}
+	if (-not $script:GraphDomainToCloudNameCache) {
+		$script:GraphDomainToCloudNameCache = @{}
 	}
 
 	$domain = $domain.Trim().ToLower()
@@ -357,8 +372,6 @@ function GraphDomainToTenantID {
 
 	# If $domain is a mail address, extract the domain part
 	try {
-		try { WatchCatchableExitSignal } catch { }
-
 		$tempDomain = [mailaddress]$domain
 
 		if ($tempDomain.Host) {
@@ -368,8 +381,6 @@ function GraphDomainToTenantID {
 
 	# If $domain is a URL, extract the DNS safe host
 	try {
-		try { WatchCatchableExitSignal } catch { }
-
 		$tempDomain = [uri]$domain
 		if ($tempDomain.DnsSafeHost) {
 			$domain = $tempDomain.DnsSafeHost
@@ -378,17 +389,13 @@ function GraphDomainToTenantID {
 		# Not a URI, do nothing
 	}
 
-	try { WatchCatchableExitSignal } catch { }
-
-	foreach ($SharePointDomain in @('sharepoint.com', 'sharepoint.us', 'dps.mil', 'sharepoint-mil.us', 'sharepoint.cn')) {
+	foreach ($SharePointDomain in $script:CloudEnvironmentSharePointOnlineDomains) {
 		if ($domain.EndsWith("-my.$($SharePointDomain)")) {
 			$domain = $domain -ireplace "-my.$($SharePointDomain)", '.onmicrosoft.com'
 
 			break
 		}
 	}
-
-	try { WatchCatchableExitSignal } catch { }
 
 	if ([string]::IsNullOrWhitespace($domain)) {
 		return
@@ -399,21 +406,57 @@ function GraphDomainToTenantID {
 	}
 
 	try {
-		try { WatchCatchableExitSignal } catch { }
+		try { global:WatchCatchableExitSignal } catch {}
 
-		try {
-			$local:result = Invoke-RestMethod -UseBasicParsing -Uri "https://odc.officeapps.live.com/odc/v2.1/federationprovider?domain=$($domain)"
-		} catch {
-			if (($null -ne $_.Exception.Response) -and ([int]$_.Exception.Response.StatusCode -in (@(304) + (400..599)))) {
-				Write-Verbose "Retryable error ($($_.Exception.Response.StatusCode.value__)). Waiting 5s."
-				Start-Sleep -Seconds 5
-				$local:result = Invoke-RestMethod -UseBasicParsing -Uri "https://odc.officeapps.live.com/odc/v2.1/federationprovider?domain=$($domain)"
-			} else {
-				throw $_
+		$local:QueryRetryMaxRetries = 3
+		$local:QueryRetryRetryCount = 0
+		$local:QueryRetryDone = $false
+
+		do {
+			try {
+				$local:result = Invoke-RestMethod -UseBasicParsing -Uri "https://odc.officeapps.live.com/odc/v2.1/federationprovider?domain=$($domain)" -ErrorAction Stop
+				$local:QueryRetryDone = $true
+			} catch {
+				$local:QueryRetryWaitTime = 0
+
+				$local:QueryRetryResponse = $_.Exception.Response
+
+				if ($null -ne $local:QueryRetryResponse) {
+					$local:QueryRetryRetryAfterHeader = $local:QueryRetryResponse.Headers['Retry-After']
+
+					$local:QueryRetryStatusCode = [int]$local:QueryRetryResponse.StatusCode
+
+					if ($null -ne $local:QueryRetryRetryAfterHeader) {
+						if ($local:QueryRetryRetryAfterHeader -match '^\d+$') {
+							$local:QueryRetryWaitTime = [Math]::Max([int]$local:QueryRetryRetryAfterHeader + 1, 3 * [Math]::Pow(($local:QueryRetryRetryCount + 1), 2))
+						} else {
+							try {
+								$retryDate = [DateTime]::Parse($local:QueryRetryRetryAfterHeader).ToUniversalTime()
+								$local:QueryRetryWaitTime = [Math]::Max([int]($retryDate - (Get-Date).ToUniversalTime()).TotalSeconds + 1, 3 * [Math]::Pow(($local:QueryRetryRetryCount + 1), 2))
+							} catch {
+								$local:QueryRetryWaitTime = 3 * [Math]::Pow(($local:QueryRetryRetryCount + 1), 2)
+							}
+						}
+					} elseif ($local:QueryRetryStatusCode -in @(408, 429, 500, 502, 503, 504)) {
+						$local:QueryRetryWaitTime = 3 * [Math]::Pow(($local:QueryRetryRetryCount + 1), 2)
+					}
+				} else {
+					$local:QueryRetryWaitTime = 3 * [Math]::Pow(($local:QueryRetryRetryCount + 1), 2)
+				}
+
+				if ($local:QueryRetryWaitTime -gt 0 -and $local:QueryRetryRetryCount -lt $local:QueryRetryMaxRetries) {
+					$local:QueryRetryRetryCount++
+
+					Write-Verbose "Retry attempt $local:QueryRetryRetryCount. Retryable error ($($_.Exception.Response.StatusCode.value__)). Waiting $($local:QueryRetryWaitTime)s."
+
+					Start-Sleep -Seconds $local:QueryRetryWaitTime
+				} else {
+					throw $_
+				}
 			}
-		}
+		} while (-not $local:QueryRetryDone)
 
-		try { WatchCatchableExitSignal } catch { }
+		try { global:WatchCatchableExitSignal } catch {}
 
 		$script:GraphDomainToTenantIDCache[$domain] = $local:result.tenantId
 
@@ -434,21 +477,284 @@ function GraphDomainToTenantID {
 				}
 			)
 		) {
-			$script:GraphDomainToCloudInstanceCache[$domain] = $script:GraphDomainToCloudInstanceCache[$local:result.tenantId] = switch ($local:result.authority_host) {
-				'login.microsoftonline.com' { 'AzurePublic'; break }
-				'login.chinacloudapi.cn' { 'AzureChina'; break }
-				'login.microsoftonline.us' { 'AzureUsGovernment'; break }
-				default { 'AzurePublic' }
-			}
+			$script:GraphDomainToCloudNameCache[$domain] = $script:GraphDomainToCloudNameCache[$local:result.tenantId] = (
+				@(
+					@(@($script:CloudEnvironmentsData | Where-Object { $($local:result.authority_host -ieq ([uri]$_.AzureADEndpoint).DnsSafeHost -and [uri]$local:result.graph -ieq [uri]$_.GraphApiEndpoint) }) | Select-Object -Last 1) +
+					@($script:CloudEnvironmentsData | Where-Object { $_.Aliases -icontains 'Public' })
+				) | Select-Object -First 1
+			).Name
 
 			return $local:result.tenantId
 		} else {
 			return
 		}
 	} catch {
-		$script:GraphDomainToTenantIDCache[$domain] = $null
+		if ($domain -and $script:GraphDomainToTenantIDCache.ContainsKey($domain)) {
+			$script:GraphDomainToTenantIDCache.Remove($domain)
+		}
 
 		return
+	}
+}
+
+
+function GraphSwitchContext {
+	param (
+		$TenantID = $null
+	)
+
+	try {
+		if ($null -eq $TenantID -and $script:GraphUser) {
+			$TenantID = GraphDomainToTenantID -domain ($script:GraphUser -split '@')[1]
+		} else {
+			$TenantID = GraphDomainToTenantID -domain $TenantID
+		}
+
+		if ($TenantID -and $script:GraphTokenDictionary.ContainsKey($TenantID)) {
+			$script:GraphToken = $script:GraphTokenDictionary[$TenantID]
+
+			$script:AuthorizationToken = $script:GraphTokenDictionary[$TenantID].AccessToken
+			$script:ExoAuthorizationToken = $script:GraphTokenDictionary[$TenantID].AccessTokenExo
+
+			$script:AuthorizationHeader = $(
+				if ($script:GraphTokenDictionary[$TenantID].AuthHeader -is [hashtable]) {
+					$script:GraphTokenDictionary[$TenantID].AuthHeader
+				} else {
+					@{
+						Authorization = $script:GraphTokenDictionary[$TenantID].AuthHeader
+					}
+				}
+			)
+
+			$script:ExoAuthorizationHeader = $(
+				if ($script:GraphTokenDictionary[$TenantID].AuthHeaderExo -is [hashtable]) {
+					$script:GraphTokenDictionary[$TenantID].AuthHeaderExo
+				} else {
+					@{
+						Authorization = $script:GraphTokenDictionary[$TenantID].AuthHeaderExo
+					}
+				}
+			)
+
+			$script:AppAuthorizationToken = $script:GraphTokenDictionary[$TenantID].AppAccessToken
+			$script:AppExoAuthorizationToken = $script:GraphTokenDictionary[$TenantID].AppAccessTokenExo
+
+			$script:AppAuthorizationHeader = $(
+				if ($script:GraphTokenDictionary[$TenantID].AppAuthHeader -is [hashtable]) {
+					$script:GraphTokenDictionary[$TenantID].AppAuthHeader
+				} else {
+					@{
+						Authorization = $script:GraphTokenDictionary[$TenantID].AppAuthHeader
+					}
+				}
+			)
+			$script:AppExoAuthorizationHeader = $(
+				if ($script:GraphTokenDictionary[$TenantID].AppAuthHeaderExo -is [hashtable]) {
+					$script:GraphTokenDictionary[$TenantID].AppAuthHeaderExo
+				} else {
+					@{
+						Authorization = $script:GraphTokenDictionary[$TenantID].AppAuthHeaderExo
+					}
+				}
+			)
+		}
+
+		if ($TenantID -and $script:GraphDomainToCloudNameCache.ContainsKey($TenantID) -and $script:GraphDomainToCloudNameCache[$TenantID]) {
+			$CloudEnvironment = $script:GraphDomainToCloudNameCache[$TenantID]
+		}
+
+		if (-not $script:CloudEnvironmentsData) {
+			# Endpoints from
+			#  https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/blob/main/src/client/Microsoft.Identity.Client/Instance/Discovery/KnownMetadataProvider.cs
+			#  https://github.com/microsoft/CSS-Exchange/blob/main/Shared/AzureFunctions/Get-CloudServiceEndpoint.ps1
+
+			$script:CloudEnvironmentsRawData = @(
+				@{
+					Aliases                 = @('AzurePublic', 'Public', 'Global', 'AzureGlobal', 'AzureCloud', 'AzureUSGovernmentGCC', 'USGovernmentGCC')
+					AzureADEndpoint         = 'https://login.microsoftonline.com'
+					GraphApiEndpoint        = 'https://graph.microsoft.com'
+					ExchangeOnlineEndpoint  = 'https://outlook.office.com'
+					AutodiscoverSecureName  = 'https://autodiscover-s.outlook.com'
+					SharePointOnlineDomains = @('sharepoint.com')
+				}
+
+				@{
+					Aliases                 = @('AzureUSGovernment', 'AzureUSGovernmentGCCHigh', 'AzureUSGovernmentL4', 'USGovernmentGCCHigh', 'USGovernmentL4')
+					AzureADEndpoint         = 'https://login.microsoftonline.us'
+					GraphApiEndpoint        = 'https://graph.microsoft.us'
+					ExchangeOnlineEndpoint  = 'https://outlook.office365.us'
+					AutodiscoverSecureName  = 'https://autodiscover-s.office365.us'
+					SharePointOnlineDomains = @('sharepoint.us')
+				}
+
+				@{
+					Aliases                 = @('AzureUSGovernmentDOD', 'AzureUSGovernmentL5', 'USGovernmentDOD', 'USGovernmentL5')
+					AzureADEndpoint         = 'https://login.microsoftonline.us'
+					GraphApiEndpoint        = 'https://dod-graph.microsoft.us'
+					ExchangeOnlineEndpoint  = 'https://outlook-dod.office365.us'
+					AutodiscoverSecureName  = 'https://autodiscover-s-dod.office365.us'
+					SharePointOnlineDomains = @('dps.mil', 'sharepoint-mil.us')
+				}
+
+				@{
+					Aliases                 = @('AzureChina', 'China', 'ChinaCloud', 'AzureChinaCloud')
+					AzureADEndpoint         = 'https://login.partner.microsoftonline.cn'
+					GraphApiEndpoint        = 'https://microsoftgraph.chinacloudapi.cn'
+					ExchangeOnlineEndpoint  = 'https://partner.outlook.cn'
+					AutodiscoverSecureName  = 'https://autodiscover-s.partner.outlook.cn'
+					SharePointOnlineDomains = @('sharepoint.cn')
+				}
+
+				@{
+					Aliases                 = @('AzureBleu', 'Bleu', 'BleuCloud', 'AzureBleuCloud')
+					AzureADEndpoint         = 'https://login.sovcloud-identity.fr'
+					GraphApiEndpoint        = 'https://graph.svc.sovcloud.fr'
+					ExchangeOnlineEndpoint  = 'https://outlook.sovcloud.fr'
+					AutodiscoverSecureName  = 'https://autodiscover-s.outlook.sovcloud.fr'
+					SharePointOnlineDomains = @('sovcloud-sharepoint.fr')
+				}
+
+				@{
+					Aliases                 = @('AzureDelos', 'Delos', 'DelosCloud', 'AzureDelosCloud')
+					AzureADEndpoint         = 'https://login.sovcloud-identity.de'
+					GraphApiEndpoint        = 'https://graph.svc.sovcloud.de'
+					ExchangeOnlineEndpoint  = 'https://outlook.sovcloud.de'
+					AutodiscoverSecureName  = 'https://autodiscover-s.outlook.sovcloud.de'
+					SharePointOnlineDomains = @('sovcloud-sharepoint.de')
+				}
+
+				@{
+					Aliases                 = @('AzureGovSG', 'GovSG', 'GovSGCloud', 'AzureGovSGCloud')
+					AzureADEndpoint         = 'https://login.sovcloud-identity.sg'
+					GraphApiEndpoint        = 'https://graph.svc.sovcloud.sg'
+					ExchangeOnlineEndpoint  = ''
+					AutodiscoverSecureName  = ''
+					SharePointOnlineDomains = @()
+				}
+			)
+
+
+			if ($CustomCloudEnvironments) {
+				$script:CloudEnvironmentsRawData += $CustomCloudEnvironments
+			}
+
+
+			$script:CloudEnvironmentsRawDataDuplicateAliases = $script:CloudEnvironmentsRawData.Aliases | Group-Object | Where-Object { $_.Count -gt 1 }
+
+			if ($script:CloudEnvironmentsRawDataDuplicateAliases) {
+				Write-Host "Duplicate cloud environment aliases found: $($script:CloudEnvironmentsRawDataDuplicateAliases.Name -join ', ')" -ForegroundColor Red
+				$script:ExitCode = 42
+				$script:ExitCodeDescription = 'Cloud environments not configured correctly.'
+				exit
+			}
+
+			foreach ($script:CloudEnvironmentsRawDataEntry in $script:CloudEnvironmentsRawData) {
+				if ($null -eq $script:CloudEnvironmentsRawDataEntry.Aliases -or
+					$script:CloudEnvironmentsRawDataEntry.Aliases.Count -eq 0 -or
+					$null -in $script:CloudEnvironmentsRawDataEntry.Aliases) {
+					Write-Host "Validation Failed: 'Aliases' must not be null or contain null values." -ForegroundColor Red
+					$script:ExitCode = 42
+					$script:ExitCodeDescription = 'Cloud environments not configured correctly.'
+					exit
+				}
+
+				@($script:CloudEnvironmentsRawDataEntry.Keys) | Where-Object { $_ -inotin @('Aliases', 'SharePointOnlineDomains') } | ForEach-Object {
+					$script:CloudEnvironmentsRawDataEntry.$_ = $script:CloudEnvironmentsRawDataEntry.$_.TrimEnd('/')
+
+					if ([String]::IsNullOrWhiteSpace($script:CloudEnvironmentsRawDataEntry.$_)) {
+						continue
+					}
+
+					try {
+						$script:CloudEnvironmentsRawDataEntryUri = [System.Uri]$script:CloudEnvironmentsRawDataEntry.$_
+
+						if (
+							$script:CloudEnvironmentsRawDataEntryUri.Scheme -ine 'https' -or
+							$script:CloudEnvironmentsRawDataEntryUri.IsFile
+						) {
+							throw 'Validation Failed'
+						}
+					} catch {
+						Write-Host "Invalid URL format in '$($script:CloudEnvironmentsRawDataEntry.Aliases[0])','$($script:CloudEnvironmentsRawDataEntry.$_)': Is not https, or is file." -ForegroundColor Red
+						$script:ExitCode = 42
+						$script:ExitCodeDescription = 'Cloud environments not configured correctly.'
+						exit
+					}
+				}
+
+				@($script:CloudEnvironmentsRawDataEntry.Keys) | Where-Object { $_ -ieq 'AzureAdEndpoint' } | ForEach-Object {
+					if (([uri]$script:CloudEnvironmentsRawDataEntry.$_.TrimEnd('/')).Segments.Count -eq 1) {
+						$script:CloudEnvironmentsRawDataEntry.$_ = $script:CloudEnvironmentsRawDataEntry.$_.TrimEnd('/')
+					}
+				}
+
+				foreach ($local:SharePointOnlineDomainEntry in $script:CloudEnvironmentsRawDataEntry.SharePointOnlineDomains) {
+					try {
+						$local:DnsSafeHost = ([uri]$local:SharePointOnlineDomainEntry).DnsSafeHost
+
+						if ($local:DnsSafeHost) {
+							$local:SharePointOnlineDomainEntry = $local:DnsSafeHost
+						}
+					} catch {}
+				}
+
+				$script:CloudEnvironmentsRawDataEntry.SharePointOnlineDomains = @($script:CloudEnvironmentsRawDataEntry.SharePointOnlineDomains | Where-Object { -not [String]::IsNullOrWhiteSpace($_) })
+			}
+
+			$script:CloudEnvironmentsData = foreach ($Entry in $script:CloudEnvironmentsRawData) {
+				$Obj = [PSCustomObject]$Entry
+				$Obj | Add-Member -MemberType ScriptProperty -Name 'Name' -Value { $this.Aliases[0] } -Force
+				$Obj
+			}
+		}
+
+		# Get SharePoint Online domains
+		if (-not $script:CloudEnvironmentSharePointOnlineDomains) {
+			$OldProgressPreference = $ProgressPreference
+			$ProgressPreference = 'SilentlyContinue'
+
+			$script:CloudEnvironmentSharePointOnlineDomains = @($script:CloudEnvironmentsData.SharePointOnlineDomains)
+
+			try {
+				@((Invoke-RestMethod -Uri "https://endpoints.office.com/version?ClientRequestId=$((New-Guid).Guid)" -Method Get -ErrorAction Stop).instance) | ForEach-Object {
+					# https://learn.microsoft.com/en-us/microsoft-365/enterprise/microsoft-365-ip-web-service?view=o365-worldwide says:
+					#  If the query does not contain the TenantName, tenant name specific domain and host names are returned with a '*' wildcard.
+					#  As SharePoint Online does not allow custom domains, we only need the '*' entries.
+					#  We can then match against them using ilike, for example.
+					#  Hint: We only filter for '*' and not also for 'sharepoint' because of '*.dps.mil', '*.cloud.microsoft', '*.sovcloud.fr', and others.
+
+					$script:CloudEnvironmentSharePointOnlineDomains += @(@(@((Invoke-RestMethod -Method Get -Uri "https://endpoints.office.com/endpoints/$($_)?ServiceAreas=SharePoint&ClientRequestId=$((New-Guid).Guid)" -ErrorAction Stop) | Where-Object { ($_.serviceArea -ieq 'SharePoint') -and ($_.ips) }).urls) | Where-Object { $_ -and $_.Contains('*.') })
+				}
+
+				$script:CloudEnvironmentSharePointOnlineDomains = @($script:CloudEnvironmentSharePointOnlineDomains | ForEach-Object { ($_ -split '\*\.')[-1] } | Where-Object { $_ } | Select-Object -Unique)
+			} catch {
+			}
+
+			$ProgressPreference = $OldProgressPreference
+		}
+
+		if ($CloudEnvironment -inotin $script:CloudEnvironmentsData.Aliases) {
+			Write-Host "Cloud environment '$($CloudEnvironment)' is not defined." -ForegroundColor Red
+			$script:ExitCode = 42
+			$script:ExitCodeDescription = 'Cloud environments not configured correctly.'
+			exit
+		}
+
+		$script:CloudEnvironmentsData | Where-Object { $_.Aliases -icontains $CloudEnvironment } | ForEach-Object {
+			$CloudEnvironment = $_.Aliases[0]
+			$script:CloudEnvironmentAzureADEndpoint = $_.AzureADEndpoint
+			$script:CloudEnvironmentGraphApiEndpoint = $_.GraphApiEndpoint
+			$script:CloudEnvironmentExchangeOnlineEndpoint = $_.ExchangeOnlineEndpoint
+			$script:CloudEnvironmentAutodiscoverSecureName = $_.AutodiscoverSecureName
+		}
+	} catch {
+		$script:GraphToken = $null
+		$script:AuthorizationToken = $null
+		$script:ExoAuthorizationToken = $null
+		$script:AuthorizationHeader = $null
+		$script:ExoAuthorizationHeader = $null
+		$script:AppAuthorizationHeader = $null
+		$script:AppExoAuthorizationHeader = $null
 	}
 }
 
@@ -461,13 +767,13 @@ function RemoveItemAlternativeRecurse {
 		[switch] $SkipFolder # when $Path is a folder, do not delete $path, only it's content
 	)
 
-	try { WatchCatchableExitSignal } catch { }
+	try { global:WatchCatchableExitSignal } catch {}
 
 	$local:ToDelete = @()
 
 	if (Test-Path -LiteralPath $path) {
 		foreach ($SinglePath in @(Get-Item -LiteralPath $Path)) {
-			try { WatchCatchableExitSignal } catch { }
+			try { global:WatchCatchableExitSignal } catch {}
 
 			if (Test-Path -LiteralPath $SinglePath -PathType Container) {
 				if (-not $SkipFolder) {
@@ -485,7 +791,7 @@ function RemoveItemAlternativeRecurse {
 	}
 
 	foreach ($SingleItemToDelete in $local:ToDelete) {
-		try { WatchCatchableExitSignal } catch { }
+		try { global:WatchCatchableExitSignal } catch {}
 
 		try {
 			if ((Test-Path -LiteralPath $SingleItemToDelete.FullName) -eq $true) {
@@ -497,7 +803,7 @@ function RemoveItemAlternativeRecurse {
 		}
 	}
 
-	try { WatchCatchableExitSignal } catch { }
+	try { global:WatchCatchableExitSignal } catch {}
 }
 
 try {
@@ -540,48 +846,10 @@ try {
 
 	$SetOutlookSignaturesScriptParameters.GraphClientID = $GraphData
 
-	# Cloud environment
-	## Endpoints from https://github.com/microsoft/CSS-Exchange/blob/main/Shared/AzureFunctions/Get-CloudServiceEndpoint.ps1
-	## Environment names must match https://learn.microsoft.com/en-us/dotnet/api/microsoft.identity.client.azurecloudinstance?view=msal-dotnet-latest
-	switch ($CloudEnvironment) {
-		{ $_ -iin @('Public', 'Global', 'AzurePublic', 'AzureGlobal', 'AzureCloud', 'AzureUSGovernmentGCC', 'USGovernmentGCC') } {
-			$script:CloudEnvironmentEnvironmentName = 'AzurePublic'
-			$script:CloudEnvironmentGraphApiEndpoint = 'https://graph.microsoft.com'
-			$script:CloudEnvironmentExchangeOnlineEndpoint = 'https://outlook.office.com'
-			$script:CloudEnvironmentAutodiscoverSecureName = 'https://autodiscover-s.outlook.com'
-			$script:CloudEnvironmentAzureADEndpoint = 'https://login.microsoftonline.com'
-			break
-		}
+	GraphSwitchContext -TenantID (GraphDomainToTenantID -domain $GraphData[0])
 
-		{ $_ -iin @('AzureUSGovernment', 'AzureUSGovernmentGCCHigh', 'AzureUSGovernmentL4', 'USGovernmentGCCHigh', 'USGovernmentL4') } {
-			$script:CloudEnvironmentEnvironmentName = 'AzureUSGovernment'
-			$script:CloudEnvironmentGraphApiEndpoint = 'https://graph.microsoft.us'
-			$script:CloudEnvironmentExchangeOnlineEndpoint = 'https://outlook.office365.us'
-			$script:CloudEnvironmentAutodiscoverSecureName = 'https://autodiscover-s.office365.us'
-			$script:CloudEnvironmentAzureADEndpoint = 'https://login.microsoftonline.us'
-			break
-		}
+	$SetOutlookSignaturesScriptParameters.CloudEnvironment = $CloudEnvironment
 
-		{ $_ -iin @('AzureUSGovernmentDOD', 'AzureUSGovernmentL5', 'USGovernmentDOD', 'USGovernmentL5') } {
-			$script:CloudEnvironmentEnvironmentName = 'AzureUSGovernment'
-			$script:CloudEnvironmentGraphApiEndpoint = 'https://dod-graph.microsoft.us'
-			$script:CloudEnvironmentExchangeOnlineEndpoint = 'https://outlook-dod.office365.us'
-			$script:CloudEnvironmentAutodiscoverSecureName = 'https://autodiscover-s-dod.office365.us'
-			$script:CloudEnvironmentAzureADEndpoint = 'https://login.microsoftonline.us'
-			break
-		}
-
-		{ $_ -iin @('China', 'AzureChina', 'ChinaCloud', 'AzureChinaCloud') } {
-			$script:CloudEnvironmentEnvironmentName = 'AzureChina'
-			$script:CloudEnvironmentGraphApiEndpoint = 'https://microsoftgraph.chinacloudapi.cn'
-			$script:CloudEnvironmentExchangeOnlineEndpoint = 'https://partner.outlook.cn'
-			$script:CloudEnvironmentAutodiscoverSecureName = 'https://autodiscover-s.partner.outlook.cn'
-			$script:CloudEnvironmentAzureADEndpoint = 'https://login.partner.microsoftonline.cn'
-			break
-		}
-	}
-
-	$SetOutlookSignaturesScriptParameters.CloudEnvironment = $script:CloudEnvironmentEnvironmentName
 
 	Write-Host '  Prepare folders'
 
@@ -948,6 +1216,6 @@ try {
 	Write-Host "End script @$(Get-Date -Format 'yyyy-MM-ddTHH:mm:ssK')@"
 
 	if ($TranscriptFullName) {
-		try { Stop-Transcript | Out-Null } catch { }
+		try { Stop-Transcript | Out-Null } catch {}
 	}
 }

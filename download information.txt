@@ -3,8 +3,32 @@ Email signatures and out-of-office replies for Exchange and Outlook.
 Full-featured, cost-effective, unsurpassed data privacy.
 
 
-To download an official release, visit https://set-outlooksignatures.com/download/.
+[!] USE OFFICIAL RELEASES
+We strongly recommend using an official release rather than raw source code.
+
+Official releases are:
+- Digitally code-signed for authenticity
+- Distributed with verifiable file hashes for integrity
+
+Download here: https://set-outlooksignatures.com/download/
 
 
-ExplicIT Consulting's Benefactor Circle add-on enhances Set-OutlookSignatures with additional features and first-class professional support.
-Visit https://set-outlooksignatures.com/benefactorcircle for details.
+[#] SOURCE CODE ACCESS
+If you are auditing code or contributing, use one of the following methods:
+- Web: https://github.com/Set-OutlookSignatures/Set-OutlookSignatures
+- Git: git clone https://github.com/Set-OutlookSignatures/Set-OutlookSignatures.git
+- GitHub CLI: gh repo clone Set-OutlookSignatures/Set-OutlookSignatures
+
+Please review CONTRIBUTING.md and CODE_OF_CONDUCT.md before participating.
+
+
+[#] COMMUNITY, ISSUES & SECURITY
+- Discussions: https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/discussions
+- Bug reports: https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/issues
+- Security: Report vulnerabilities exclusively as instructed in SECURITY.md
+
+
+[#] ADDITIONAL FEATURES & PROFESSIONAL SUPPORT
+ExplicIT Consulting’s Benefactor Circle add-on enhances Set-OutlookSignatures with additional features and provides first-class professional support.
+
+Details: https://set-outlooksignatures.com/benefactorcircle

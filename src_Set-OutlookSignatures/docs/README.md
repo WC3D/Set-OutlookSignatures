@@ -1,18 +1,24 @@
 <!-- omit in toc -->
-## **<a href="https://set-outlooksignatures.com" target="_blank"><img src="/src_Set-OutlookSignatures/logo/Set-OutlookSignatures%20Logo.png" width="250px" title="Set-OutlookSignatures" alt="Set-OutlookSignatures"></a>**<br>Email signatures and out-of-office replies for Exchange and Outlook.<br>Full-featured, cost-effective, unsurpassed data privacy.<br><br><a href="https://set-outlooksignatures.com" target="_blank"><img src="https://img.shields.io/github/license/Set-OutlookSignatures/Set-OutlookSignatures?label=License&labelColor=black&color=informational" alt="License: EUPL 1.2"></a><!--XXXRemoveWhenBuildingXXX<a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/releases" target="_blank"><img src="https://img.shields.io/badge/this%20release-XXXVersionStringXXX-informational?labelColor=black" alt="this release"></a> XXXRemoveWhenBuildingXXX--> <a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/releases" target="_blank"><img src="https://img.shields.io/github/v/tag/Set-OutlookSignatures/Set-OutlookSignatures?display_name=tag&include_prereleases&sort=semver&label=Latest%20release&color=informational&labelColor=black" alt="Latest release" data-external="1"></a> <a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/releases" target="_blank"><img src="https://img.shields.io/github/downloads/set-outlooksignatures/set-outlooksignatures/total?label=Downloads&labelColor=black" alt="Downloads" data-external="1"></a> <a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/issues" target="_blank"><img src="https://img.shields.io/github/issues/Set-OutlookSignatures/Set-OutlookSignatures?label=Issues&labelColor=black" alt="Issues" data-external="1"></a> <a href="https://set-outlooksignatures.com/faq#what-can-i-learn-from-the-code-of-set-outlooksignatures" target="_blank"><img src="https://img.shields.io/badge/Behind%20the%20scenes-Learn%20from%20the%20code-lawngreen?labelColor=black" alt="Behind the scenes: Learn from the code"></a>
+## **<a href="https://set-outlooksignatures.com" target="_blank"><img src="/src_Set-OutlookSignatures/logo/Set-OutlookSignatures%20Logo.png" width="250px" title="Set-OutlookSignatures" alt="Set-OutlookSignatures"></a>**<br>Email signatures and out-of-office replies for Exchange and Outlook.<br>Full-featured, cost-effective, unsurpassed data privacy.<br><br><a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/blob/main/license.txt" target="_blank"><img src="https://img.shields.io/github/license/Set-OutlookSignatures/Set-OutlookSignatures?label=License&labelColor=black&color=informational" alt="License: EUPL 1.2"></a><!--XXXRemoveWhenBuildingXXX<a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/releases" target="_blank"><img src="https://img.shields.io/badge/this%20release-XXXVersionStringXXX-informational?labelColor=black" alt="this release"></a> XXXRemoveWhenBuildingXXX--> <a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/releases" target="_blank"><img src="https://img.shields.io/github/v/tag/Set-OutlookSignatures/Set-OutlookSignatures?display_name=tag&include_prereleases&sort=semver&label=Latest%20release&color=informational&labelColor=black" alt="Latest release" data-external="1"></a> <a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/releases" target="_blank"><img src="https://img.shields.io/github/downloads/set-outlooksignatures/set-outlooksignatures/total?label=Downloads&labelColor=black" alt="Downloads" data-external="1"></a> <a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/issues" target="_blank"><img src="https://img.shields.io/github/issues/Set-OutlookSignatures/Set-OutlookSignatures?label=Issues&labelColor=black" alt="Issues" data-external="1"></a> <a href="https://set-outlooksignatures.com/faq#what-can-i-learn-from-the-code-of-set-outlooksignatures" target="_blank"><img src="https://img.shields.io/badge/Behind%20the%20scenes-Learn%20from%20the%20code-lawngreen?labelColor=black" alt="Behind the scenes: Learn from the code"></a>
 
 <p>
   <a
-    href="https://set-outlooksignatures.com/quickstart" target="_blank"><img src="https://img.shields.io/badge/Click%20for-Quick%20Start%20Guide:%20Deploy%20signatures%20in%20minutes-lawngreen?labelColor=black" alt="Quick Start Guide: Deploy signatures within minutes">
+    href="https://set-outlooksignatures.com/quickstart" target="_blank"><img src="https://img.shields.io/badge/Quick%20Start%20Guide-Deploy%20signatures%20in%20minutes-lawngreen?labelColor=black" alt="Quick Start Guide: Deploy signatures within minutes">
   </a>
   <a
-    href="https://set-outlooksignatures.com/features" target="_blank"><img src="https://img.shields.io/badge/Click%20for-Features%20and%20Feature%20Comparison-lawngreen?labelColor=black" alt="Features and Feature Comparison">
+    href="https://set-outlooksignatures.com/features" target="_blank"><img src="https://img.shields.io/badge/Features-and%20competitor%20comparison-lawngreen?labelColor=black" alt="Features and competitor comparison">
+  </a>
+  <a
+    href="https://set-outlooksignatures.com/blog" target="_blank"><img src="https://img.shields.io/badge/Blog-Master%20Outlook%20signatures-lawngreen?labelColor=black" alt="Blog: Master Outlook signatures">
   </a>
 </p>
 
 <h2>Manage your Outlook signatures centrally and fully automated</h2>
 <p>Set-OutlookSignatures takes the hassle out of manually maintaining Outlook signatures and out-of-office replies.</p>
 <p>Thanks to centrally managed templates that automatically pull in your company data, every email gets the professional look your business deserves: Up-to-date, consistent, and on-brand.</p>
+<p>Centralized management, seamless deployment, and full control across all Outlook editions on all platforms: Classic and New, Android, iOS, Linux, macOS, Web, Windows.</p>
+<p>Supports on-prem and all M365 clouds: Public, US Government (GCC, GCC High, DoD), China, sovereign clouds Bleu, Delos, GovSG, and more.</p>
+<p>No telemetry, no "calling home". Emails and directory data are not routed through a 3rd party data center or cloud service. DNS records (SPF) and mail flow remain unchanged.</p>
 
 
 <h2>Less effort, more professionalism</h2>
@@ -65,6 +71,7 @@
 </table>
 
 
+<!--
 <h2>Manage your Outlook signatures centrally. We’ll show you how!</h2>
 <p>Set-OutlookSignatures is your simple, powerful, and GDPR-compliant solution for automated signature management.<p>
 
@@ -75,7 +82,7 @@
 <p>If you’d like to start with the basics and appreciate a down-to-earth approach, our demo video offers a compact overview of the key features of Set-OutlookSignatures – based on a real-world example, straightforward, practical, and without much staging.<br>You will see: Our focus is on the functionality and quality of our software, we're neither marketing professionals nor particularly gifted actors.<br>
   <a href="https://www.youtube-nocookie.com/embed/K9TrCjTdRUI" target="_blank"><img src="https://img.youtube.com/vi/K9TrCjTdRUI/hqdefault.jpg" height="300" title="Set-OutlookSignatures demo video" alt="Set-OutlookSignatures demo video"></a>
 </p>
-
+-->
 
 <h2>Deploy signatures within minutes</h2>
 <p>Follow the easy 3-step-process to deploy your first signatures, get a glimpse of what Set-OutlookSignatures can do, and create a robust starting point for your own customizations.<p>
