@@ -1,5 +1,6 @@
 <!-- omit in toc -->
-## **<a href="https://set-outlooksignatures.com" target="_blank"><img src="/src_Set-OutlookSignatures/logo/Set-OutlookSignatures%20Logo.png" width="250px" title="Set-OutlookSignatures" alt="Set-OutlookSignatures"></a>**<br>Email signatures and out-of-office replies for Exchange and Outlook.<br>Full-featured, cost-effective, unsurpassed data privacy.<br><br><a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/blob/main/license.txt" target="_blank"><img src="https://img.shields.io/github/license/Set-OutlookSignatures/Set-OutlookSignatures?label=License&labelColor=black&color=informational" alt="License: EUPL 1.2"></a><!--XXXRemoveWhenBuildingXXX<a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/releases" target="_blank"><img src="https://img.shields.io/badge/this%20release-XXXVersionStringXXX-informational?labelColor=black" alt="this release"></a> XXXRemoveWhenBuildingXXX--> <a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/releases" target="_blank"><img src="https://img.shields.io/github/v/tag/Set-OutlookSignatures/Set-OutlookSignatures?display_name=tag&include_prereleases&sort=semver&label=Latest%20release&color=informational&labelColor=black" alt="Latest release" data-external="1"></a> <a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/releases" target="_blank"><img src="https://img.shields.io/github/downloads/set-outlooksignatures/set-outlooksignatures/total?label=Downloads&labelColor=black" alt="Downloads" data-external="1"></a> <a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/issues" target="_blank"><img src="https://img.shields.io/github/issues/Set-OutlookSignatures/Set-OutlookSignatures?label=Issues&labelColor=black" alt="Issues" data-external="1"></a> <a href="https://set-outlooksignatures.com/faq#what-can-i-learn-from-the-code-of-set-outlooksignatures" target="_blank"><img src="https://img.shields.io/badge/Behind%20the%20scenes-Learn%20from%20the%20code-lawngreen?labelColor=black" alt="Behind the scenes: Learn from the code"></a>
+# Email signatures and out-of-office replies with data sovereignty<br><sub>Set-OutlookSignatures and the Benefactor Circle add-on</sub>
+<a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/blob/main/license.txt" target="_blank"><img src="https://img.shields.io/github/license/Set-OutlookSignatures/Set-OutlookSignatures?label=License&labelColor=black&color=informational" alt="License: EUPL 1.2"></a><!--XXXRemoveWhenBuildingXXX<a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/releases" target="_blank"><img src="https://img.shields.io/badge/this%20release-XXXVersionStringXXX-informational?labelColor=black" alt="this release"></a> XXXRemoveWhenBuildingXXX--> <a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/releases" target="_blank"><img src="https://img.shields.io/github/v/tag/Set-OutlookSignatures/Set-OutlookSignatures?display_name=tag&include_prereleases&sort=semver&label=Latest%20release&color=informational&labelColor=black" alt="Latest release" data-external="1"></a> <a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/releases" target="_blank"><img src="https://img.shields.io/github/downloads/set-outlooksignatures/set-outlooksignatures/total?label=Downloads&labelColor=black" alt="Downloads" data-external="1"></a> <a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/issues" target="_blank"><img src="https://img.shields.io/github/issues/Set-OutlookSignatures/Set-OutlookSignatures?label=Issues&labelColor=black" alt="Issues" data-external="1"></a> <a href="https://set-outlooksignatures.com/faq#what-can-i-learn-from-the-code-of-set-outlooksignatures" target="_blank"><img src="https://img.shields.io/badge/Behind%20the%20scenes-Learn%20from%20the%20code-lawngreen?labelColor=black" alt="Behind the scenes: Learn from the code"></a>
 
 # Changelog
 <!--
@@ -27,6 +28,37 @@ _**Breaking:** <Present tense verb> XXX_
 #### Removed
 #### Fixed
 -->
+
+
+## <a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/releases/tag/v4.26.1" target="_blank">v4.26.1</a> - 2026-03-17
+
+_Put Notice here_
+
+_**Breaking:** <Present tense verb> XXX_
+
+### Set-OutlookSignatures
+#### Changed
+- Update MSAL.Net to v4.83.1.
+- Update libphonenumber-csharp to v9.0.26.
+#### Added
+- Warn when the Entra ID app used is missing optional permissions, exit when it is missing required permissions.
+#### Removed
+#### Fixed
+- Fix WatchCatchableExitSignal not ending the script. Set-OutlookSignatures finishes all its signature and log file related tasks but then hangs infinitely. This does not happen in all environments but depends on combinations of calling process, console host, and .Net version.
+
+### Benefactor Circle add-on
+#### Changed
+#### Added
+#### Removed
+#### Fixed
+- Do not reset Outlook Web and New Outlook on Windows user configuration options - such as time zone, dark mode, and reading pane position - when configuring signatures in Outlook Web. The problem only happens in v4.26.0 when the new Graph API code path is used. (<a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/discussions/152" target="_blank">#152</a>) (Thanks <a href="https://github.com/wwa-jvteeffelen" target="_blank">@wwa-jvteeffelen</a>!)
+
+### Outlook add-in (part of the Benefactor Circle add-on)
+#### Changed
+- Update @azure/msal-browser to v5.5.0.
+#### Added
+#### Removed
+#### Fixed
 
 
 ## <a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/releases/tag/v4.26.0" target="_blank">v4.26.0</a> - 2026-03-09
@@ -332,7 +364,7 @@ _See ['`Benefactor Circle add-on`'](https://set-outlooksignatures.com/benefactor
 - Switch from AngleSharp and HTMLFile to HtmlAgilityPack v1.12.1.
 - Remove '`Set-Location -LiteralPath $PSScriptRoot`' from scripts that do not require to know from which path they are run from.
 - Show all replacement variables in verbose output, not just the ones that have values. This helps detect null or empty values.
-- Rewrite and radically simplify the [Quick Start Guide](https://set-outlooksignatures.com/quickstart).
+- Rewrite and radically simplify the [Quickstart Guide](https://set-outlooksignatures.com/quickstart).
 - Reduce repository and release size by deleting unused image files and by outsourcing the detailed documentation to [set-outlooksignatures.com](https://set-outlooksignatures.com).
 #### Added
 - Support for cross-tenant access and Multitenant Organizations. This allows to deploy signatures for mailboxes that are not hosted in the users home tenant, with all the properties, replacement variables and Benefactor Circle features being fully available. See the description of the parameter '`GraphClientID`' in the [parameter documentation](https://set-outlooksignatures.com/parameters) for details.
@@ -743,7 +775,7 @@ _**Attention, Exchange Online admins**_
 _See `What about the roaming signatures feature in Exchange Online?` in the [FAQ section](https://set-outlooksignatures.com/faq) for details on how this feature works. Set-OutlookSignatures supports cloud roaming signatures - see `MirrorCloudSignatures` in the [parameters documentation](https://set-outlooksignatures.com/parameters) for details._
 ### Changed
 - Graph connectivity: Update dependency MSAL.Net to v4.60.3.
-- The Quick Start Guide is now easier to follow and clearer on requirements.
+- The Quickstart Guide is now easier to follow and clearer on requirements.
 - Updated sample templates (full barrier-free design, and other smaller changes).
 - Updated `Authentication` chapter in the [technical details documentation](https://set-outlooksignatures.com/details).
 - The API for saving photos and user-defined images has been changed, which significantly speeds up the creation of temporary files.
@@ -1000,7 +1032,7 @@ _**Attention, cloud mailbox users:**_
 ### Added
 - When no mailboxes are configured in Outlook, additional mailboxes configured in Outlook on the web are used. Thanks to our partner [ExplicIT Consulting](https://explicitconsulting.at) for donating this code, enabling another world-first feature and bringing us even closer to supporting the "new Outlook" client (codename "Monarch") in the future!
 - Add hint to TLS 1.2 when Entra ID/Graph authentication is not successful (<a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/issues/85" target="_blank">#85</a>) (Thanks <a href="https://github.com/halatovic" target="_blank">@halatovic</a>!)
-- Update '`Quick Start Guide`' in '`README`' file with clearer instructions on how to register the Entra ID app required for hybrid and cloud-only environments
+- Update '`Quickstart Guide`' in '`README`' file with clearer instructions on how to register the Entra ID app required for hybrid and cloud-only environments
 
 
 ## <a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/releases/tag/v4.2.1" target="_blank">v4.2.1</a> - 2023-08-16
@@ -1081,7 +1113,7 @@ When `EmbedimagesInHtml` is enabled, it now automatically enables the "Send pict
 - **Breaking:** New parameter `DisableRoamingSignatures` defaults to `true`. See `README` for details.
 - Updated FAQ `Images in signatures have a different size than in templates`. See `README` for details.
 ### Added
-- `Quick Start Guide`. See `README` for details.
+- `Quickstart Guide`. See `README` for details.
 - New parameter `MirrorLocalSignaturesToCloud` for experimentally handling roaming signatures. Disabled by default. See `README` for details.
 - Thanks to our partnership with [ExplicIT Consulting](https://explicitconsulting.at), Set-OutlookSignatures and its components are digitally signed with an Extended Validation (EV) Code Signing Certificate (which is the highest code signing standard available).  
 This is not only available for Benefactor Circle members, but also the Free and Open Source core version is code signed. Code signing makes it much easier to implement Set-OutlookSignatures in environments being locked down with AppLocker or comparable tools.

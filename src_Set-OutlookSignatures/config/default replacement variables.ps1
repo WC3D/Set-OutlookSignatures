@@ -416,9 +416,8 @@ foreach ($x in @('CurrentUser', 'CurrentUserManager', 'CurrentMailbox', 'Current
     }
 
     if ($UseHtmTemplates) {
-        $ReplaceHash["`$$($x)PostalAddress`$"] = 
-        (([System.Net.WebUtility]::HtmlEncode((Format-PostalAddress @FormatPostAddressOptions)) -replace "`r`n", '<p>') -replace "`n", '<br>')
+        $ReplaceHash["`$$($x)PostalAddress`$"] = [System.Net.WebUtility]::HtmlEncode((Format-PostalAddress @FormatPostAddressOptions)) -replace '\r?\n', '<br />' # Converts paragraphs to line breaks
     } else {
-        $ReplaceHash["`$$($x)PostalAddress`$"] = (Format-PostalAddress @FormatPostAddressOptions)
+        $ReplaceHash["`$$($x)PostalAddress`$"] = (Format-PostalAddress @FormatPostAddressOptions) -replace '\r?\n', "`n" # Converts paragraphs to line breaks
     }
 }

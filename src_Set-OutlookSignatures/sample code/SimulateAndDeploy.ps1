@@ -150,8 +150,8 @@ param (
 	[pscredential]$GraphUserCredential = (
 		@(, @('SimulateAndDeployUser@example.com', 'P@ssw0rd!')) | ForEach-Object { New-Object System.Management.Automation.PSCredential ($_[0], $(ConvertTo-SecureString $_[1] -AsPlainText -Force)) }
 	), # Use Get-Credential for interactive mode or (Get-Content -LiteralPath '.\Config\password.secret') to retrieve info from a separate file (MFA is not supported in any case)
-	$GraphClientID = 'The application (client) ID of the Entra ID app for SimulateAndDeploy', # not the same ID as defined in 'default graph config.ps1' or a custom Graph config file
-	$GraphClientSecret = 'The client secret of the Entra ID app for SimulateAndDeploy', # to load the secret from a file, use (Get-Content -LiteralPath '.\Config\app.secret')
+	$GraphClientID = '<The application (client) ID of the Entra ID app for SimulateAndDeploy>', # not the same ID as defined in 'default graph config.ps1' or a custom Graph config file
+	$GraphClientSecret = '<The client secret of the Entra ID app for SimulateAndDeploy>', # to load the secret from a file, use (Get-Content -LiteralPath '.\Config\app.secret')
 	[ValidateNotNullOrEmpty()]
 	[string]$CloudEnvironment = 'Public',
 

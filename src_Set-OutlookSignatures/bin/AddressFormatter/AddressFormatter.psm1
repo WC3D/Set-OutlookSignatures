@@ -195,7 +195,7 @@ function Format-PostalAddressInternal {
     # 14) Set final components
     $Script:AddrFmt.FinalComponents = $rh_components
 
-    return $rendered
+    return $rendered -replace '\r?\n', [System.Environment]::NewLine
 }
 
 
@@ -470,7 +470,7 @@ function Evaluate-TemplateLambdas {
         $Rendered = $Rendered.Substring(0, $m.Index) + $replacement + $Rendered.Substring($m.Index + $m.Length)
         $m = $rx.Match($Rendered)
     }
-    return $Rendered
+    return $rendered -replace '\r?\n', [System.Environment]::NewLine
 }
 
 function Select-First {

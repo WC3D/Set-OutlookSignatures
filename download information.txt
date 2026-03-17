@@ -1,6 +1,5 @@
 Set-OutlookSignatures
-Email signatures and out-of-office replies for Exchange and Outlook.
-Full-featured, cost-effective, unsurpassed data privacy.
+Email signatures and out-of-office replies with data sovereignty
 
 
 [!] USE OFFICIAL RELEASES

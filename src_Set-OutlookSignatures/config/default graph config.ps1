@@ -39,6 +39,8 @@
 #     Client secret
 #       There is no need to define a client secret, as we only work with delegated permissions, and not with application permissions
 #     Add the following delegated permissions (not application permissions)
+#       "Delegated" means that all these permissions run in the security context of the user
+#         Set-OutlookSignatures only gain access to a clearly defined subset of what any of your users can do anyhow.
 #       Identity > Applications > App registrations > your application > Manage > API permissions > Add a permission
 #       Microsoft Graph, delegated permissions
 #         email
@@ -55,10 +57,10 @@
 #           Allows the app to list groups, read basic group properties and read membership of all groups the signed-in user has access to.
 #           Required to find groups by name and to get their security identifier (SID) and the number of transitive members.
 #         Mail.ReadWrite
-#           Allows the app to create, read, update, and delete email in user mailboxes. Does not include permission to send mail.
+#           Allows the app to create, read, update, and delete email in user mailboxes, on behalf of the signed-in user. Does not include permission to send mail.
 #           Required to connect to Outlook on the web and to set Outlook signatures.
 #         MailboxSettings.ReadWrite
-#           Allows the app to create, read, update, and delete user's mailbox settings. Does not include permission to send mail.
+#           Allows the app to create, read, update, and delete user's mailbox settings, on behalf of the signed-in user. Does not include permission to send mail.
 #           Required to detect the state of the out-of-office assistant and to set out-of-office replies.
 #         offline_access
 #           Allows the app to see and update the data you gave it access to, even when users are not currently using the app. This does not give the app any additional permissions.

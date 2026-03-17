@@ -1,9 +1,10 @@
 <!-- omit in toc -->
-## **<a href="https://set-outlooksignatures.com" target="_blank"><img src="/src_Set-OutlookSignatures/logo/Set-OutlookSignatures%20Logo.png" width="250px" title="Set-OutlookSignatures" alt="Set-OutlookSignatures"></a>**<br>Email signatures and out-of-office replies for Exchange and Outlook.<br>Full-featured, cost-effective, unsurpassed data privacy.<br><br><a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/blob/main/license.txt" target="_blank"><img src="https://img.shields.io/github/license/Set-OutlookSignatures/Set-OutlookSignatures?label=License&labelColor=black&color=informational" alt="License: EUPL 1.2"></a><!--XXXRemoveWhenBuildingXXX<a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/releases" target="_blank"><img src="https://img.shields.io/badge/this%20release-XXXVersionStringXXX-informational?labelColor=black" alt="this release"></a> XXXRemoveWhenBuildingXXX--> <a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/releases" target="_blank"><img src="https://img.shields.io/github/v/tag/Set-OutlookSignatures/Set-OutlookSignatures?display_name=tag&include_prereleases&sort=semver&label=Latest%20release&color=informational&labelColor=black" alt="Latest release" data-external="1"></a> <a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/releases" target="_blank"><img src="https://img.shields.io/github/downloads/set-outlooksignatures/set-outlooksignatures/total?label=Downloads&labelColor=black" alt="Downloads" data-external="1"></a> <a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/issues" target="_blank"><img src="https://img.shields.io/github/issues/Set-OutlookSignatures/Set-OutlookSignatures?label=Issues&labelColor=black" alt="Issues" data-external="1"></a> <a href="https://set-outlooksignatures.com/faq#what-can-i-learn-from-the-code-of-set-outlooksignatures" target="_blank"><img src="https://img.shields.io/badge/Behind%20the%20scenes-Learn%20from%20the%20code-lawngreen?labelColor=black" alt="Behind the scenes: Learn from the code"></a>
+# Email signatures and out-of-office replies with data sovereignty<br><sub>Set-OutlookSignatures and the Benefactor Circle add-on</sub>
+<a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/blob/main/license.txt" target="_blank"><img src="https://img.shields.io/github/license/Set-OutlookSignatures/Set-OutlookSignatures?label=License&labelColor=black&color=informational" alt="License: EUPL 1.2"></a><!--XXXRemoveWhenBuildingXXX<a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/releases" target="_blank"><img src="https://img.shields.io/badge/this%20release-XXXVersionStringXXX-informational?labelColor=black" alt="this release"></a> XXXRemoveWhenBuildingXXX--> <a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/releases" target="_blank"><img src="https://img.shields.io/github/v/tag/Set-OutlookSignatures/Set-OutlookSignatures?display_name=tag&include_prereleases&sort=semver&label=Latest%20release&color=informational&labelColor=black" alt="Latest release" data-external="1"></a> <a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/releases" target="_blank"><img src="https://img.shields.io/github/downloads/set-outlooksignatures/set-outlooksignatures/total?label=Downloads&labelColor=black" alt="Downloads" data-external="1"></a> <a href="https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/issues" target="_blank"><img src="https://img.shields.io/github/issues/Set-OutlookSignatures/Set-OutlookSignatures?label=Issues&labelColor=black" alt="Issues" data-external="1"></a> <a href="https://set-outlooksignatures.com/faq#what-can-i-learn-from-the-code-of-set-outlooksignatures" target="_blank"><img src="https://img.shields.io/badge/Behind%20the%20scenes-Learn%20from%20the%20code-lawngreen?labelColor=black" alt="Behind the scenes: Learn from the code"></a>
 
 <p>
   <a
-    href="https://set-outlooksignatures.com/quickstart" target="_blank"><img src="https://img.shields.io/badge/Quick%20Start%20Guide-Deploy%20signatures%20in%20minutes-lawngreen?labelColor=black" alt="Quick Start Guide: Deploy signatures within minutes">
+    href="https://set-outlooksignatures.com/quickstart" target="_blank"><img src="https://img.shields.io/badge/Quickstart-Signatures%20in%20minutes-lawngreen?labelColor=black" alt="Quickstart: Signatures in minutes">
   </a>
   <a
     href="https://set-outlooksignatures.com/features" target="_blank"><img src="https://img.shields.io/badge/Features-and%20competitor%20comparison-lawngreen?labelColor=black" alt="Features and competitor comparison">
@@ -13,91 +14,61 @@
   </a>
 </p>
 
-<h2>Manage your Outlook signatures centrally and fully automated</h2>
-<p>Set-OutlookSignatures takes the hassle out of manually maintaining Outlook signatures and out-of-office replies.</p>
-<p>Thanks to centrally managed templates that automatically pull in your company data, every email gets the professional look your business deserves: Up-to-date, consistent, and on-brand.</p>
-<p>Centralized management, seamless deployment, and full control across all Outlook editions on all platforms: Classic and New, Android, iOS, Linux, macOS, Web, Windows.</p>
-<p>Supports on-prem and all M365 clouds: Public, US Government (GCC, GCC High, DoD), China, sovereign clouds Bleu, Delos, GovSG, and more.</p>
-<p>No telemetry, no "calling home". Emails and directory data are not routed through a 3rd party data center or cloud service. DNS records (SPF) and mail flow remain unchanged.</p>
 
-
-<h2>Less effort, more professionalism</h2>
-<p>Manually maintaining signatures ties up valuable personnel and financial resources. This quickly leads to outdated information that does not comply with internal or regulatory requirements.</p>
-
-<p>With Set-OutlookSignatures, you fully automate this process.</p>
-
+<h2><i>Create value </i>without giving up data sovereignty</h2>
+<p>The free and open-source Set-OutlookSignatures and the Benefactor Circle add-on turn email signatures and out-of-office replies into a centrally managed, reusable business asset — without external dependencies.</p>
+<p>Every email becomes a controlled touchpoint for your brand: up to date, consistent, and fully aligned across the organization.</p>
 <table>
   <tr>
-    <td valign="top" width="33%"><b>Always up-to-date contact details and company information</b></td>
-    <td valign="top" width="33%"><b>Consistent and convincing appearance in every email</b></td>
-    <td valign="top" width="33%"><b>No manual updating by your employees</b></td>
+    <td valign="top" width="33%">📣 <b>Marketing: Unified Brand Control</b><br>Enforce consistent branding, dynamic marketing campaigns, and up-to-date contact details on every message.</td>
+    <td valign="top" width="33%">🛠️ <b>IT: Painless Automation</b><br>IAutomate signature deployment and centralize OOF management within minutes, no new consoles to learn. Invisible to employees, zero footprint on clients.</td>
+    <td valign="top" width="33%">🔒 <b>Legal: Total Data Sovereignty</b><br>Remove compliance risks from third-party processors. Total sovereignty, your data never leaves your controlled environment.</td>
+  </tr>
+</table>
+<p>No hidden fees, no surprises — trusted worldwide in the most hardened environments. Review our <a href="https://set-outlooksignatures.com/benefactorcircle#price" target="_blank">transparent pricing</a> and see how we <a href="https://set-outlooksignatures.com/features#feature-comparison" target="_blank">beat the competition</a>.</p>
+
+
+<h2>Experience it <i>in action</i></h2>
+<p>See how organizations use Set-OutlookSignatures and the Benefactor Circle add-on to enforce brand consistency, governance, and data sovereignty without changing how users work.</p>
+<table>
+  <tr>
+    <td valign="top" width="33%" colspan="2">🧭 <b>Cross-Platform Sovereignty</b></td>
+    <td valign="top" width="33%" colspan="2">📣 <b>Dynamic Branding and Marketing</b></td>
+    <td valign="top" width="33%" colspan="2">🏛️ <b>Administrative Governance</b></td>
+  </tr>
+  <tr>
+    <td valign="top" width="50%" colspan="3">
+      <h3>Personal demo</h3>
+      <p>Schedule a personal walkthrough to see how this fits your specific infrastructure and compliance needs.</p>
+      <p><a href="https://outlook.cloud.microsoft/book/demo.set-outlooksignatures@explicitconsulting.at" target="_blank"><img src="https://img.shields.io/badge/Expert%20Demo-See%20Data%20Sovereignty%20in%20Action-gold?&labelColor=black" alt="Expert Demo: See Data Sovereignty in Action"></a></p>
+    </td>
+    <td valign="top" width="50%" colspan="3">
+      <h3>Quickstart</h3>
+      <p>Follow our 3-step process to deploy your first signatures in minutes and create a robust starting point.</p>
+      <p><a href="https://set-outlooksignatures.com/quickstart" target="_blank"><img src="https://img.shields.io/badge/Deploy%20your%20first-Signatures%20in%203%20steps-blue?&labelColor=black" alt="Deploy your first signatures in 3 steps"></a></p>
+    </td>
   </tr>
 </table>
 
 
-<h2>The strengths of Set-OutlookSignatures</h2>
-
+<h2>The <i>power</i> of the ecosystem</h2>
+<p>Combining the free and open-source Set-OutlookSignatures with the Benefactor Circle add-on gives you enterprise-grade governance with total data sovereignty and zero-footprint integration.</p>
+<p>This combination delivers capabilities no other solution offers, made possible by its advanced, modular architecture. It goes far beyond static directory attributes: You can easily extend it to ingest data from virtually any source — including web services, LDAP directories, databases, and files — and define fully custom variables tailored to your organization.</p>
 <table>
   <tr>
-    <td valign="top" width="33%"><b>Simple for everyone</b><br>Intuitive for IT and marketing, invisible to your employees.</td>
-    <td valign="top" width="33%"><b>Dynamic content</b><br>Predefined and custom attributes at user, mailbox, and manager level.</td>
-    <td valign="top" width="33%"><b>Out-of-office replies</b><br>Manage out-of-office messages centrally, for internal and external recipients.</td>
+    <td valign="top" width="33%">🟡 <b>Frictionless Adoption</b><br>Easy for IT and marketing to manage, invisible to end users.</td>
+    <td valign="top" width="33%">🟡 <b>Dynamic Content</b><br>Use dynamic data from users, mailboxes, managers, and your own sources.</td>
+    <td valign="top" width="33%">🟡 <b>Out-Of-Office Replies</b><br>Control out-of-office replies centrally, for internal and external recipients.</td>
   </tr>
   <tr>
-    <td valign="top" width="33%"><b>Cross-platform</b><br>Signatures anytime, anywhere: Windows, macOS, Android, iOS, Linux, Web. Classic and New Outlook. On-prem, hybrid and cloud-only.</td>
-    <td valign="top" width="33%"><b>Innovative features</b><br>Supports personal and shared mailboxes, "Send As", "Send on Behalf", simulation mode, roaming signatures, and many more features for maximum flexibility.</td>
-    <td valign="top" width="33%"><b>Flexible assignment</b><br>Control signatures by department, location, language, role, time, and many other properties from different data sources.</td>
+    <td valign="top" width="33%">🟡 <b>Cross-Platform</b><br>Works everywhere: All Outlook editions on any platform, on‑prem and in every M365 cloud.</td>
+    <td valign="top" width="33%">🟡 <b>Enterprise Versatility</b><br>Personal and shared mailboxes, "Send As", "Send on Behalf", simulation mode, roaming signatures, and more.</td>
+    <td valign="top" width="33%">🟡 <b>Flexible Assignment</b><br>Assign signatures by department, location, language, role, time, or any custom rule.</td>
   </tr>
   <tr>
-    <td valign="top" width="33%"><b>No new infrastructure required</b><br>Set-OutlookSignatures runs on your existing systems and creates no new dependencies.</td>
-    <td valign="top" width="33%"><b>Unsurpassed data privacy</b><br>All data remains in your trusted environment, within your existing security and governance structures.</td>
-    <td valign="top" width="33%"><b>Additional marketing channel</b><br>Design templates freely in Word or HTML. Use signatures for campaigns and brand messaging, free and effectively.</td>
+    <td valign="top" width="33%">🟡 <b>Zero-Footprint Integration</b><br>Everything runs on your existing systems and creates no new dependencies.</td>
+    <td valign="top" width="33%">🟡 <b>Unsurpassed Data Privacy</b><br>Your data never leaves your environment and stays within your established security and governance structures.</td>
+    <td valign="top" width="33%">🟡 <b>Additional Marketing Channel</b><br>Design templates freely in Word or HTML. Turn email signatures into a powerful, cost-free marketing channel.</td>
   </tr>
 </table>
 
-
-
-<h2>Functionality meets expertise</h2>
-<p>The optional Benefactor Circle Add-On extends Set-OutlookSignatures with powerful enterprise features, prioritized support, and direct access to new capabilities.<p>
-
-<p>If desired, we’ll set up our solution together with you: Simple, tailored to your needs, and with sustainable knowledge transfer.<p>
-
-<table>
-  <tr>
-    <td valign="top" width="33%"><b>Cost-efficient and transparent</b><br>Fair prices. No subscriptions. No maintenance contracts.</td>
-    <td valign="top" width="33%"><b>Support with handshake quality</b><br>Solution-driven. At eye level. Accountable.</td>
-    <td valign="top" width="33%"><b>Tangible added value</b><br>Your investment pays off. From day one.</td>
-  </tr>
-</table>
-
-
-<!--
-<h2>Manage your Outlook signatures centrally. We’ll show you how!</h2>
-<p>Set-OutlookSignatures is your simple, powerful, and GDPR-compliant solution for automated signature management.<p>
-
-<p>Experience live how quickly and intuitively you can centrally manage and optimize your Outlook signatures and out-of-office replies.<p>
-
-<p><a href="https://demo.set-outlooksignatures.com" target="_blank"><img src="https://img.shields.io/badge/Click%20to%20schedule%20your-personal%20demo-gold?labelColor=black" alt="Click to schedule your personal demo"></a></p>
-
-<p>If you’d like to start with the basics and appreciate a down-to-earth approach, our demo video offers a compact overview of the key features of Set-OutlookSignatures – based on a real-world example, straightforward, practical, and without much staging.<br>You will see: Our focus is on the functionality and quality of our software, we're neither marketing professionals nor particularly gifted actors.<br>
-  <a href="https://www.youtube-nocookie.com/embed/K9TrCjTdRUI" target="_blank"><img src="https://img.youtube.com/vi/K9TrCjTdRUI/hqdefault.jpg" height="300" title="Set-OutlookSignatures demo video" alt="Set-OutlookSignatures demo video"></a>
-</p>
--->
-
-<h2>Deploy signatures within minutes</h2>
-<p>Follow the easy 3-step-process to deploy your first signatures, get a glimpse of what Set-OutlookSignatures can do, and create a robust starting point for your own customizations.<p>
-
-<p><a href="https://set-outlooksignatures.com/quickstart" target="_blank"><img src="https://img.shields.io/badge/Click%20for-Quick%20Start%20Guide-lawngreen?labelColor=black" alt="Click for Quick Start Guide"></a></p>
-
-<h2>Dive deeper</h2>
-<p>Click the button to open the full Set-OutlookSignatures site:</p>
-
-<p><a href="https://set-outlooksignatures.com" target="_blank"><img src="https://img.shields.io/badge/Click%20for-Set--OutlookSignatures%20homepage-lawngreen?labelColor=black" alt="Click for Set-OutlookSignatures homepage"></a></p>
-
-<p>Visit our <a href="https://set-outlooksignatures.com/help">help and support center</a> to learn about:<p>
-<ul>
-  <li>The detailed feature set and a comparison with market companions</li>
-  <li>Requirements and configuration options</li>
-  <li>Best practices and FAQ</li>
-  <li>How to get first-class professional support</li>
-</ul>

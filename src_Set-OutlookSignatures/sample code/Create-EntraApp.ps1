@@ -270,8 +270,8 @@ if ($ExistingApp.Count -gt 0) {
 
 $params = @{
     DisplayName    = $AppName
-    Description    = "$($AppType) app for Set-OutlookSignatures: Email signatures and out-of-office replies for Exchange and Outlook. Full-featured, cost-effective, unsurpassed data privacy."
-    Notes          = "$($AppType) app for Set-OutlookSignatures: Email signatures and out-of-office replies for Exchange and Outlook. Full-featured, cost-effective, unsurpassed data privacy."
+    Description    = "$($AppType) app for Set-OutlookSignatures: Email signatures and out-of-office replies with data sovereignty"
+    Notes          = "$($AppType) app for Set-OutlookSignatures: Email signatures and out-of-office replies with data sovereignty"
     SignInAudience = 'AzureADMyOrg'
 }
 
@@ -322,7 +322,7 @@ if ($AppType -ieq 'Set-OutlookSignatures') {
                     },
 
                     # Delegated permission: Mail.ReadWrite
-                    #   Allows the app to create, read, update, and delete email in user mailboxes. Does not include permission to send mail.
+                    #   Allows the app to create, read, update, and delete email in user mailboxes, on behalf of the signed-in user. Does not include permission to send mail.
                     #   Required to connect to Outlook on the web and to set Outlook signatures.
                     @{
                         'id'   = '024d486e-b451-40bb-833d-3e66d98c5c73'
@@ -330,7 +330,7 @@ if ($AppType -ieq 'Set-OutlookSignatures') {
                     },
 
                     # Delegated permission: MailboxSettings.ReadWrite
-                    #   Allows the app to create, read, update, and delete user's mailbox settings. Does not include permission to send mail.
+                    #   Allows the app to create, read, update, and delete user's mailbox settings, on behalf of the signed-in user. Does not include permission to send mail.
                     #   Required to detect the state of the out-of-office assistant and to set out-of-office replies.
                     @{
                         'id'   = '818c620a-27a9-40bd-a6a5-d96f7d610b4b'
@@ -417,7 +417,7 @@ if ($AppType -ieq 'Set-OutlookSignatures') {
                     },
 
                     # Delegated permission: Mail.ReadWrite
-                    #   Allows the app to create, read, update, and delete email in user mailboxes. Does not include permission to send mail.
+                    #   Allows the app to create, read, update, and delete email in user mailboxes, on behalf of the signed-in user. Does not include permission to send mail.
                     #   Required to connect to Outlook on the web and to set Outlook signatures.
                     @{
                         'id'   = '024d486e-b451-40bb-833d-3e66d98c5c73'
@@ -425,7 +425,7 @@ if ($AppType -ieq 'Set-OutlookSignatures') {
                     },
 
                     # Delegated permission: MailboxSettings.ReadWrite
-                    #   Allows the app to create, read, update, and delete user's mailbox settings. Does not include permission to send mail.
+                    #   Allows the app to create, read, update, and delete user's mailbox settings, on behalf of the signed-in user. Does not include permission to send mail.
                     #   Required to detect the state of the out-of-office assistant and to set out-of-office replies.
                     @{
                         'id'   = '818c620a-27a9-40bd-a6a5-d96f7d610b4b'

@@ -1,8 +1,7 @@
 ﻿<#
 .SYNOPSIS
 Set-OutlookSignatures XXXVersionStringXXX
-Email signatures and out-of-office replies for Exchange and Outlook.
-Full-featured, cost-effective, unsurpassed data privacy.
+Email signatures and out-of-office replies with data sovereignty
 
 .DESCRIPTION
 Find the full documentation at https://set-outlooksignatures.com.
@@ -8070,10 +8069,11 @@ function GraphGetToken {
 
     if (-not $EXO) {
         Write-Host "$($indent)Graph authentication"
+        Write-Host "$($indent)  Application (client) ID of the Entra ID app: $($GraphClientID)"
 
         if ($GraphClientID -ieq 'beea8249-8c98-4c76-92f6-ce3c468a61e6') {
             Write-Host "$($indent)  You use the Entra ID app provided by the developers. It is recommended to create und use your own Entra ID app." -ForegroundColor Yellow
-            Write-Host "$($indent)  The Quick Start Guide shows how to do this: https://set-outlooksignatures.com/quickstart" -ForegroundColor Yellow
+            Write-Host "$($indent)  The Quickstart Guide shows how to do this: https://set-outlooksignatures.com/quickstart" -ForegroundColor Yellow
         }
 
         $script:GraphUser = $null
@@ -8502,7 +8502,7 @@ function GraphGetToken {
                                     return @{
                                         error             = (($error[0] | Out-String) + @"
 No authentication possible.
-1. Did you follow the Quick Start Guide and configure the Entra ID app correctly?
+1. Did you follow the Quickstart Guide and configure the Entra ID app correctly?
    https://set-outlooksignatures.com/quickstart
 2. Run Set-OutlookSignatures with the "-Verbose" parameter and check for authentication messages.
 3. If the "Interactive" message is displayed:
@@ -9028,6 +9028,104 @@ function GraphGetTokenWrapper {
         $indent = ''
     )
 
+
+    function local:GraphCheckTokenPermissions {
+        if ($script:GraphToken -and $script:GraphToken.AccessToken) {
+            $local:tempGraphAccessTokenPermissionsResult = @()
+
+            @(
+                'email'
+                'GroupMember.Read.All'
+                'Mail.ReadWrite'
+                'MailboxSettings.ReadWrite'
+                'openid'
+                'profile'
+                'User.Read.All'
+                , @('Files.Read.All', 'Files.SelectedOperations', 'Optional, SharePoint Online access will not work')
+                , @('MailboxConfigItem.ReadWrite', 'EWS.AccessAsUser.All', 'Required but missing, only MailboxConfigItem.ReadWrite will work when Microsoft disables EWS in Exchange Online in October 2026.')
+                , @('MailboxConfigItem.ReadWrite', 'MailboxConfigItem.ReadWrite', 'Optional but highly recommended as Microsoft disables EWS in Exchange Online in October 2026.')
+                # 'test0_delegated'
+                # , @('test1_delegated', 'test2_delegated', 'Optional, some text')
+                # , @('test3_delegated', 'test4_delegated', 'Required, some text')
+            ) | ForEach-Object {
+                if ($_ -is [array]) {
+                    if (
+                        $($_[0] -inotin @((ParseJwtToken $script:GraphToken.AccessToken).payload.scp -split ' ')) -and
+                        $($_[1] -inotin @((ParseJwtToken $script:GraphToken.AccessToken).payload.scp -split ' '))
+                    ) {
+                        $local:tempGraphAccessTokenPermissionsResult += "Delegated permission $($_[0]) or $($_[1]): $($_[2])"
+                    }
+                } else {
+                    if ($_ -inotin @((ParseJwtToken $script:GraphToken.AccessToken).payload.scp -split ' ')) {
+                        $local:tempGraphAccessTokenPermissionsResult += "Delegated permission $($_): Required but missing"
+                    }
+                }
+            }
+
+            if ($local:tempGraphAccessTokenPermissionsResult.Count -gt 0) {
+                Write-Host "$($indent)  The Entra ID app misses delegated permissions. See '.\config\default graph config.ps1' for details." -ForegroundColor $(if ($local:tempGraphAccessTokenPermissionsResult -ilike '*: Required*') { 'Red' } else { 'Yellow' })
+
+                $local:tempGraphAccessTokenPermissionsResult | ForEach-Object {
+                    Write-Host "$($indent)    $($_)" -ForegroundColor $(if ($_ -ilike '*: Required*') { 'Red' } else { 'Yellow' })
+
+                }
+            }
+        }
+
+
+        if ($script:GraphToken -and $script:GraphToken.AppAccessToken) {
+            $local:tempGraphAppAccessTokenPermissionsResult = @()
+
+            @(
+                'GroupMember.Read.All'
+                'Mail.ReadWrite'
+                'MailboxSettings.ReadWrite'
+                'User.Read.All'
+                , @('Files.Read.All', 'Files.SelectedOperations', 'Optional, SharePoint Online access will not work')
+                , @('MailboxConfigItem.ReadWrite', 'EWS.AccessAsUser.All', 'Required but missing, only MailboxConfigItem.ReadWrite will work when Microsoft disables EWS in Exchange Online in October 2026.')
+                , @('MailboxConfigItem.ReadWrite', 'MailboxConfigItem.ReadWrite', 'Optional but highly recommended as Microsoft disables EWS in Exchange Online in October 2026.')
+                # 'test0_application'
+                # , @('test1_application', 'test2_delegated', 'Optional, some text')
+                # , @('test3_application', 'test4_application', 'Required, some text')
+            ) | ForEach-Object {
+                if ($_ -is [array]) {
+                    if (
+                        $($_[0] -inotin @((ParseJwtToken $script:GraphToken.AppAccessToken).payload.roles -split ' ')) -and
+                        $($_[1] -inotin @((ParseJwtToken $script:GraphToken.AppAccessToken).payload.roles -split ' '))
+                    ) {
+                        $local:tempGraphAppAccessTokenPermissionsResult += "Application permission $($_[0]) or $($_[1]): $($_[2])"
+                    }
+                } else {
+                    if ($_ -inotin @((ParseJwtToken $script:GraphToken.AppAccessToken).payload.roles -split ' ')) {
+                        $local:tempGraphAppAccessTokenPermissionsResult += "Application permission $($_): Required but missing"
+                    }
+                }
+            }
+
+            if ($local:tempGraphAppAccessTokenPermissionsResult.Count -gt 0) {
+                Write-Host "$($indent)  The Entra ID app misses application permissions. See '.\sample code\SimulateAndDeploy.ps1' for details." -ForegroundColor $(if ($local:tempGraphAppAccessTokenPermissionsResult -ilike '*: Required*') { 'Red' } else { 'Yellow' })
+
+                $local:tempGraphAppAccessTokenPermissionsResult | ForEach-Object {
+                    Write-Host "$($indent)    $($_)" -ForegroundColor $(if ($_ -ilike '*: Required*') { 'Red' } else { 'Yellow' })
+                }
+            }
+        }
+
+        if (
+            @(@(@($tempGraphAccessTokenPermissionsResult) + @($tempGraphAppAccessTokenPermissionsResult)) -ilike '*: Required*').Count -gt 0
+        ) {
+            Write-Host 'The Entra ID app misses required permissions:' -ForegroundColor Red
+
+            @(@($tempGraphAccessTokenPermissionsResult) + @($tempGraphAppAccessTokenPermissionsResult)) | ForEach-Object {
+                Write-Host "  $($_)" -ForegroundColor $(if ($_ -ilike '*: Required*') { 'Red' } else { 'Yellow' })
+            }
+
+            $script:ExitCode = 44
+            $script:ExitCodeDescription = 'Entra ID app misses required permissions.'
+            exit
+        }
+    }
+
     if (-not ($GraphClientIDOriginal -is [string])) {
         $tempGraphClientIDOriginal = @()
 
@@ -9067,6 +9165,8 @@ function GraphGetTokenWrapper {
 
             $script:GraphToken = GraphGetToken -indent "$($indent)"
 
+            local:GraphCheckTokenPermissions
+
             try { global:WatchCatchableExitSignal } catch {}
         } catch {
             $script:GraphToken = $null
@@ -9083,12 +9183,14 @@ function GraphGetTokenWrapper {
                 $script:GraphTenantId = GraphDomainToTenantID -domain $GraphClientIDOriginal[$i][0]
                 $GraphClientID = $GraphClientIDOriginal[$i][1]
 
-                Write-Host "$($indent)Tenant $($GraphClientIDOriginal[$i][0]) ($($script:GraphTenantId))"
+                Write-Host "$($indent)Tenant $($GraphClientIDOriginal[$i][0]) (tenant ID $($script:GraphTenantId))"
 
                 try {
                     try { global:WatchCatchableExitSignal } catch {}
 
                     $script:GraphTokenDictionary[$script:GraphTenantId] = $script:GraphToken = GraphGetToken -indent "$($indent)  "
+
+                    local:GraphCheckTokenPermissions
 
                     try { global:WatchCatchableExitSignal } catch {}
                 } catch {
@@ -9099,6 +9201,8 @@ function GraphGetTokenWrapper {
             }
         } else {
             $script:GraphToken = GraphGetToken -indent "$($indent)  "
+
+            local:GraphCheckTokenPermissions
         }
     }
 
@@ -10910,12 +11014,12 @@ try {
         Write-Host "  Code: $($script:ExitCode)"
         Write-Host "  Description: $($script:ExitCodeDescription)"
     } else {
-        Write-Host 'Exit code' -ForegroundColor Yellow
-        Write-Host "  Code: $($script:ExitCode)" -ForegroundColor Yellow
-        Write-Host "  Description: $($script:ExitCodeDescription)" -ForegroundColor Yellow
+        Write-Host 'Exit code' -ForegroundColor Red
+        Write-Host "  Code: $($script:ExitCode)" -ForegroundColor Red
+        Write-Host "  Description: $($script:ExitCodeDescription)" -ForegroundColor Red
 
-        Write-Host '  Check for existing issues at https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/issues?q=' -ForegroundColor Yellow
-        Write-Host '  or get professional support from ExplicIT Consulting at https://set-outlooksignatures.com/support.' -ForegroundColor Yellow
+        Write-Host '  Check for existing issues at https://github.com/Set-OutlookSignatures/Set-OutlookSignatures/issues?q=' -ForegroundColor Red
+        Write-Host '  or get professional support from ExplicIT Consulting at https://set-outlooksignatures.com/support.' -ForegroundColor Red
     }
 
     Write-Host
