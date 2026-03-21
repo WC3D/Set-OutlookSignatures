@@ -1,7 +1,7 @@
 ﻿<#
 .SYNOPSIS
 Set-OutlookSignatures XXXVersionStringXXX
-Email signatures and out-of-office replies with data sovereignty
+Data Sovereign Email Signatures and Out-of-Office Replies
 
 .DESCRIPTION
 Find the full documentation at https://set-outlooksignatures.com.

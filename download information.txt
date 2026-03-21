@@ -1,5 +1,5 @@
 Set-OutlookSignatures
-Email signatures and out-of-office replies with data sovereignty
+Data Sovereign Email Signatures and Out-of-Office Replies
 
 
 [!] USE OFFICIAL RELEASES

@@ -270,8 +270,8 @@ if ($ExistingApp.Count -gt 0) {
 
 $params = @{
     DisplayName    = $AppName
-    Description    = "$($AppType) app for Set-OutlookSignatures: Email signatures and out-of-office replies with data sovereignty"
-    Notes          = "$($AppType) app for Set-OutlookSignatures: Email signatures and out-of-office replies with data sovereignty"
+    Description    = "$($AppType) app for Set-OutlookSignatures: Data Sovereign Email Signatures and Out-of-Office Replies"
+    Notes          = "$($AppType) app for Set-OutlookSignatures: Data Sovereign Email Signatures and Out-of-Office Replies"
     SignInAudience = 'AzureADMyOrg'
 }
 
